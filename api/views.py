@@ -6,6 +6,10 @@ from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
 from rest_framework import serializers
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import viewsets
+from datetime import datetime
+import pytz
 
 # Create your views here.
 class CallViewSet(viewsets.ModelViewSet):
@@ -16,6 +20,55 @@ class CallViewSet(viewsets.ModelViewSet):
 class CalculateCallViewSet(viewsets.ModelViewSet):
     queryset = Call.objects.all()
     serializer_class = CallSerializer
+
+    def retrieve(self, request, pk=None):
+        call = Call.objects.get(id=pk)
+        call_start = CallStart.objects.get(call_id=pk)
+        call_end = CallEnd.objects.get(call_id=pk)
+        serializer = CallSerializer(call)    
+
+        if(call_start.timestamp.hour >= 6 and  call_end.timestamp.hour < 22):
+            print("Standard time call")
+            duration = call_end.timestamp - call_start.timestamp 
+        else:
+            print("Reduced tariff time call")
+            if (call_start.timestamp.hour < 6 and  ( call_end.timestamp.hour > 6 and  call_end.timestamp.hour  < 22)): #4
+                print("call_start.timestamp.hour < 6 and  ( call_end.timestamp.hour > 6 and  call_end.timestamp.hour  < 22)")
+                d2 = datetime(call_start.timestamp.year, call_start.timestamp.month, call_start.timestamp.day, 6, 0, 0, tzinfo=pytz.utc)              
+                duration =  call_end.timestamp - d2
+            elif (call_start.timestamp.hour < 22 and   call_end.timestamp.hour > 22 ): #5
+                print("call_start.timestamp.hour < 22 and call_end.timestamp.hour > 22")
+                d2 = datetime(call_end.timestamp.year, call_end.timestamp.month, call_end.timestamp.day, 22, 0, 0, tzinfo=pytz.utc)            
+                duration =  d2 - call_start.timestamp
+            elif (call_start.timestamp.hour < 6 and   call_end.timestamp.hour > 22 ):
+                print("call_start.timestamp.hour < 6 and   call_end.timestamp.hour > 22")
+                d2 = datetime(call_end.timestamp.year, call_end.timestamp.month, call_end.timestamp.day, 22, 0, 0, tzinfo=pytz.utc)
+                d1 = datetime(call_start.timestamp.year, call_start.timestamp.month, call_start.timestamp.day, 6, 0, 0, tzinfo=pytz.utc)
+                duration =  d2 - d1
+            else: #
+                print("hooray!")
+                duration =  0        
+
+        if type(duration) is datetime:
+            seconds = duration.total_seconds()
+        else:
+            seconds = 0
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        totalminutes = (hours*60+minutes)
+
+        call.duration = call_end.timestamp - call_start.timestamp
+        call.price = 0.09 * totalminutes + 0.36
+        
+        #seconds = seconds % 60
+        print(duration)
+        print(call_start.timestamp)
+        print(call_end.timestamp)        
+        print(call.duration)
+        print("R$",call.price)
+        #call.save()
+        #print(call.call_start.source)
+        return Response(serializer.data)
 
 
 class CreateCallViewSet(viewsets.ModelViewSet):
@@ -57,7 +110,9 @@ class EndCallViewSet(viewsets.ModelViewSet):
         
         totalminutes = (hours*60+minutes)
         print(totalminutes)
-
+        
+        then = datetime.datetime.fromtimestamp(callstart.timestamp.second)
+        print(then)
         #print(duration.minute)
         if(callstart.timestamp.hour >= 6 and  callstart.timestamp.hour < 22):
             print("Standard time call")
@@ -66,6 +121,13 @@ class EndCallViewSet(viewsets.ModelViewSet):
             call.save()
         else:
             print("Reduced tariff time call")
+            # 22 -- 6 
+
+            # 23 -- 10 = 2h
+
+            # 20 -- 24 = 2h 
+
+
         #Standard time call - between 6h00 and 22h00 (excluding):
 
         #Reduced tariff time call - between 22h00 and 6h00 (excluding):
