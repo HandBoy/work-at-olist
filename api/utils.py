@@ -38,7 +38,7 @@ def calculate_price(timestamp_start, timestamp_end):
             print("(timestamp_start.hour > 6 and timestamp_start.hour < 22) and   timestamp_end.hour >= 22 ")
             d2 = datetime(timestamp_end.year, timestamp_end.month, timestamp_end.day, 22, 0, 0, tzinfo=pytz.utc)            
             duration =  d2 - timestamp_start
-        elif (call_start.timestamp.hour < 6 and   timestamp_end.hour > 22 ):
+        elif (timestamp_start.hour < 6 and   timestamp_end.hour > 22 ):
             print("call_start.timestamp.hour < 6 and   timestamp_end.hour > 22")
             d2 = datetime(timestamp_end.year, timestamp_end.month, timestamp_end.day, 22, 0, 0, tzinfo=pytz.utc)
             d1 = datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, 6, 0, 0, tzinfo=pytz.utc)
