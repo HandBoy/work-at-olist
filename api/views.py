@@ -14,7 +14,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import (RetrieveModelMixin, CreateModelMixin, ListModelMixin, RetrieveModelMixin)
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .utils import calculate_price
+from .utils import calculate_price, get_correct_date
 
 import pytz
 
@@ -25,17 +25,21 @@ class MonthlyBillingView(APIView):
     queryset = Call.objects.all()
     
     def get(self, request, phone_number, year=None, month=None):
-        calls = Call.objects.filter(call_start__source=phone_number, call_end__timestamp__month=month)
-        
+        month, year = get_correct_date(month, year)
+        print(month, year)
+        calls = Call.objects.filter(call_start__source=phone_number, 
+                                    call_end__timestamp__month=month,
+                                    call_end__timestamp__year=year)
+
         calls_dict = []
         
         for call in calls:
             a = {'source'   : call.call_start.get().source,
-                'date'    : call.call_start.get().timestamp.date(),
-                'time'    : call.call_start.get().timestamp.time(),
-                'duration'      : call.duration,
-                'price'         : call.price}            
-            calls_dict.append( a  )
+                'date'      : call.call_start.get().timestamp.date(),
+                'time'      : call.call_start.get().timestamp.time(),
+                'duration'  : call.duration,
+                'price'     : call.price}            
+            calls_dict.append( a )
         
         
         serializer = MonthBillSerializer(calls_dict, many=True)
