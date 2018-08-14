@@ -11,6 +11,9 @@ def get_correct_date(month=None, year=None):
     currentMonth = datetime.now().month
     currentYear = datetime.now().year
 
+    if (year is None) or (int(year) >= currentMonth):
+        year = currentYear
+
     if (month is None) or (int(month) >= currentMonth):
         if currentMonth-1 == 0:
             return 12, currentYear-1
