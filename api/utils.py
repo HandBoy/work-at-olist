@@ -2,17 +2,24 @@ from datetime import timedelta
 from datetime import datetime
 import pytz
 
-def get_previous_month(period):
+def get_correct_date(month=None, year=None):
     """
     Get the previous month.
         Args:
             date_ (Date object):
     """
-    last_month_period = period.replace(day=1) - timedelta(days=1)
-    month = last_month_period.month
-    year = last_month_period.year
+    currentMonth = datetime.now().month
+    currentYear = datetime.now().year
 
-    return month, year
+    if (month is None) or (int(month) >= currentMonth):
+        if currentMonth-1 == 0:
+            return 12, currentYear-1
+        else:
+            return currentMonth-1, year
+    else:  
+        print("else")
+        return month, currentYear
+   
 
 
 def calculate_price(timestamp_start, timestamp_end):        
