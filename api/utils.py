@@ -8,21 +8,24 @@ def get_correct_date(month=None, year=None):
         Args:
             date_ (Date object):
     """
-    currentMonth = datetime.now().month
-    currentYear = datetime.now().year
+    if (month is None): 
+        #print("month none:")
+        month = datetime.now().month -1
+    if (year is None): 
+        #print("year none:")
+        year = datetime.now().year 
 
-    if (year is None) or (int(year) >= currentMonth):
-        year = currentYear
+    createdate = datetime(int(year), int(month), datetime.now().day, 0, 0, 0)  
 
-    if (month is None) or (int(month) >= currentMonth):
-        if currentMonth-1 == 0:
-            return 12, currentYear-1
-        else:
-            return currentMonth-1, year
-    else:  
-        print("else")
-        return month, currentYear
-   
+    if(createdate.date() >= datetime.now().date() ):
+        #print("date > datetime.now().date ")
+        month = datetime.now().month -1
+        year = datetime.now().year 
+
+    
+    return [month, year]
+    
+    
 
 
 def calculate_price(timestamp_start, timestamp_end):        
