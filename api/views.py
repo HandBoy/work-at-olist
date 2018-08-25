@@ -15,7 +15,7 @@ from rest_framework.mixins import (RetrieveModelMixin, CreateModelMixin, ListMod
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from .utils import calculate_price, get_correct_date
-from rest_framework.exceptions import APIException
+from .exceptions import MonthInvalidAPI, PhoneNumberInvalidAPI
 import re
 
 import pytz
@@ -23,13 +23,7 @@ import pytz
 # Create your views here.
 #month, year = get_previous_month(date.today())
 
-class PhoneNumberInvalidAPI(APIException):
-    status_code = 400
-    default_detail = 'Phone Number parameter was invalid'
 
-class MonthInvalidAPI(APIException):
-    status_code = 400
-    default_detail = 'Month parameter was invalid'
 
 
 class MonthlyBillingView(APIView):
