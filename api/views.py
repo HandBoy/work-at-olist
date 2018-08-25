@@ -23,9 +23,11 @@ import pytz
 # Create your views here.
 #month, year = get_previous_month(date.today())
 
+class PhoneNumberInvalidAPI(APIException):
+    status_code = 400
+    default_detail = 'Phone Number parameter was invalid'
 
-
-class MonthAPIQuery(APIException):
+class MonthInvalidAPI(APIException):
     status_code = 400
     default_detail = 'Month parameter was invalid'
 
@@ -34,8 +36,15 @@ class MonthlyBillingView(APIView):
     queryset = Call.objects.all()
     
     def get(self, request, phone_number, year=None, month=None):
+        # First, we need to validate if the phone number received
+        # is valid
+        is_valid_phone = re.compile(r'^\d{10,11}$').match(phone_number)
+        # If it isn't, return a 400 BAD REQUEST response
+        if not is_valid_phone:
+            raise PhoneNumberInvalidAPI()
+
         if(month is not None and (int(month) <= 1 or int(month) >= 12)):
-            raise MonthAPIQuery()
+            raise MonthInvalidAPI()
 
         month, year = get_correct_date(month, year)
         print(month, year)
