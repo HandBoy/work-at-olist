@@ -4,7 +4,7 @@ from calls.models import Call, CallStart, CallEnd
 class CallStartSerializer(serializers.ModelSerializer):
     class Meta:
         model = CallStart
-        fields = ('source', 'timestamp')
+        fields = ('source', 'destination','timestamp')
 
 
 
@@ -33,9 +33,3 @@ class MonthBillSerializer(serializers.Serializer):
     time = serializers.CharField(max_length=200)
     duration = serializers.CharField(max_length=200)
     price = serializers.FloatField()
-
-    #call_start = CallStartField(many=True, read_only=True)
-    #class Meta:
-    #     model = Call
-    #    fields = ('call_start', 'duration', 'price')
-
