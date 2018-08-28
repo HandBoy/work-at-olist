@@ -5,6 +5,16 @@ from datetime import datetime
 
 
 class TesteGetCorrectDate(TestCase):
+    def test_none_month(self):
+        month = datetime.now().month-1
+        year = datetime.now().year
+        self.assertListEqual(get_correct_date(None, year), [month, year])
+    
+    def test_none_month_none_year(self):
+        month = datetime.now().month-1
+        year = datetime.now().year
+        self.assertListEqual(get_correct_date(None, None), [month, year])
+
     def test_actual_month_actual_year(self):
         month = datetime.now().month
         year = datetime.now().year
@@ -39,4 +49,3 @@ class TesteGetCorrectDate(TestCase):
         month = datetime.now().month-1
         year = datetime.now().year
         self.assertListEqual(get_correct_date(month, year), [month, year])
-
