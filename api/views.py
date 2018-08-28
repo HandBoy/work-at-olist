@@ -1,14 +1,16 @@
+import re
+
 from django.shortcuts import render
-from rest_framework import viewsets
-from calls.models import Call, CallStart, CallEnd
-from .serializers import CallSerializer, CallStartSerializer, CallEndSerializer, MonthBillSerializer
-from rest_framework import status
-from rest_framework import serializers
+from rest_framework import serializers, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .utils import calculate_price, get_correct_date
+
+from calls.models import Call, CallEnd, CallStart
+
 from .exceptions import MonthInvalidAPI, PhoneNumberInvalidAPI
-import re
+from .serializers import (CallEndSerializer, CallSerializer,
+                          CallStartSerializer, MonthBillSerializer)
+from .utils import calculate_price, get_correct_date
 
 # Create your views here.
 
@@ -90,4 +92,3 @@ class EndCallViewSet(viewsets.ModelViewSet):
         call.duration = endcall.timestamp - callstart.timestamp 
         call.price  = calculate_price(callstart.timestamp, endcall.timestamp)
         call.save()
-

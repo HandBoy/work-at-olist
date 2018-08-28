@@ -1,6 +1,8 @@
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from rest_framework import routers
-from .views import CalculateCallViewSet, CreateCallViewSet, EndCallViewSet, MonthlyBillingView
+
+from .views import (CalculateCallViewSet, CreateCallViewSet, EndCallViewSet,
+                    MonthlyBillingView)
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()

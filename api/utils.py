@@ -1,8 +1,9 @@
-from datetime import timedelta
-from datetime import datetime, time
-from calls.models import RatePlans
+from datetime import datetime, time, timedelta
 
 import pytz
+
+from calls.models import RatePlans
+
 
 def get_correct_date(month=None, year=None):
     """
@@ -27,8 +28,6 @@ def get_correct_date(month=None, year=None):
     return [month, year]
     
     
-
-
 def calculate_price(timestamp_start, timestamp_end):        
     minutes_standard_days = 0
     minutes_reduced_days = 0
@@ -54,7 +53,6 @@ def calculate_price(timestamp_start, timestamp_end):
     for plan in rate_plans:
         tax = plan.standing_time_charge       
         d1, d2 = timestamp_start.replace(tzinfo=pytz.utc), timestamp_end.replace(tzinfo=pytz.utc)
-
         
         if (timestamp_start.hour <= timestamp_end.hour):
             print("timestamp_start.hour < timestamp_end.hour")
@@ -101,12 +99,6 @@ def calculate_price(timestamp_start, timestamp_end):
         if(not two_intervals):
             duration_standard =  d2 - d1
                 
-           
-                    
-        
-
-
-
     total_standard_minutes = calc_total_minutes(duration_standard, minutes_standard_days)
     #total_reduced_minutes = calc_total_minutes(duration_reduced, minutes_reduced_days)
     

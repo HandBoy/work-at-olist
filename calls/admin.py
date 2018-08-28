@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Call, CallEnd, CallStart
 
 # Register your models here.

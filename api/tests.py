@@ -1,8 +1,12 @@
-from django.test import TestCase
-from .utils import calculate_price, get_correct_date
-from calls.models import RatePlans
 from datetime import datetime, time
+
 import pytz
+from django.test import TestCase
+
+from calls.models import RatePlans
+
+from .utils import calculate_price, get_correct_date
+
 # Create your tests here.
 
 class TesteGetCorrectDate(TestCase):
@@ -54,8 +58,7 @@ class TesteGetCorrectDate(TestCase):
 
 class TesteGetCalculatePrice(TestCase):
 
-    def setUp(self):
-        
+    def setUp(self):        
         RatePlans.objects.get_or_create(
             name = 'Standard time call',
             standard_time_start = time(6,0,0),
@@ -68,7 +71,6 @@ class TesteGetCalculatePrice(TestCase):
             reduced_time_minute = 0.09
             )
     #Start one day == Fnish next day
-
     #Start < Fnish
 
     def test_tariff_standard_end_same_day(self): # 1
@@ -172,4 +174,3 @@ class TesteGetCalculatePrice(TestCase):
         start_call  = datetime(2018, 6, 18, 22, 43, 58, tzinfo=pytz.utc)
         end_call    = datetime(2018, 6, 18, 5, 35, 43, tzinfo=pytz.utc)
         self.assertEqual(calculate_price(start_call, end_call), 0.36)
-   

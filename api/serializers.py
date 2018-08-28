@@ -1,11 +1,12 @@
 from rest_framework import serializers
-from calls.models import Call, CallStart, CallEnd
+
+from calls.models import Call, CallEnd, CallStart
+
 
 class CallStartSerializer(serializers.ModelSerializer):
     class Meta:
         model = CallStart
         fields = ('source', 'destination','timestamp')
-
 
 
 class CallEndSerializer(serializers.ModelSerializer):

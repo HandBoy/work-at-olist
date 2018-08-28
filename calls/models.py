@@ -1,5 +1,6 @@
-from django.db import models
 from datetime import timedelta
+
+from django.db import models
 
 # Create your models here.
 TYPE = (
@@ -7,10 +8,10 @@ TYPE = (
     ('E', 'End'),
 )
 
-
 class Call(models.Model):
     duration = models.DurationField(blank=True, default=timedelta())
     price =  models.FloatField(blank=True, default=0)
+
 
 class CallStart(models.Model):
     type = models.CharField(max_length=1,choices=TYPE, default='S')
@@ -29,7 +30,6 @@ class CallEnd(models.Model):
     call_id = models.ForeignKey(Call, on_delete=models.CASCADE, related_name='call_end')
 
 
-
 class RatePlans(models.Model):
     name = models.CharField(max_length=100)
     standard_time_start = models.TimeField()
@@ -40,25 +40,3 @@ class RatePlans(models.Model):
     reduced_time_end = models.TimeField()
     reduced_time_charge = models.FloatField()
     reduced_time_minute = models.FloatField()
-
-'''
-
-Call Start Record
-{
-  "id":  // Record unique identificator;
-  "type":  // Indicate if it's a call "start" or "end" record;
-  "timestamp":  // The timestamp of when the event occured;
-  "call_id":  // Unique for each call record pair;
-  "source":  // The subscriber phone number that originated the call;
-  "destination":  // The phone number receiving the call.
-}
-
-Call End Record
-{
-   "id":  // Record unique identificator;
-   "type":  // Indicate if it's a call "start" or "end" record;
-   "timestamp":  // The timestamp of when the event occured;
-   "call_id":  // Unique for each call record pair.
-}
-
-'''
