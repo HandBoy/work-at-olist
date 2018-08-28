@@ -1,30 +1,16 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from rest_framework import viewsets
 from calls.models import Call, CallStart, CallEnd
 from .serializers import CallSerializer, CallStartSerializer, CallEndSerializer, MonthBillSerializer
-from rest_framework import generics, status
-from rest_framework.generics import CreateAPIView
+from rest_framework import status
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import viewsets
-from datetime import datetime
-from rest_framework import generics
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import (RetrieveModelMixin, CreateModelMixin, ListModelMixin, RetrieveModelMixin)
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
 from .utils import calculate_price, get_correct_date
 from .exceptions import MonthInvalidAPI, PhoneNumberInvalidAPI
 import re
 
-import pytz
-
 # Create your views here.
-#month, year = get_previous_month(date.today())
-
-
-
 
 class MonthlyBillingView(APIView):
     queryset = Call.objects.all()
@@ -81,7 +67,6 @@ class CalculateCallViewSet(viewsets.ModelViewSet):
 class CreateCallViewSet(viewsets.ModelViewSet):
     queryset = CallStart.objects.all()
     serializer_class = CallStartSerializer
-
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
