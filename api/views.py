@@ -1,18 +1,18 @@
 import re
 
-from django.shortcuts import render
-from rest_framework import serializers, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from calls.models import Call, CallEnd, CallStart
 
-from .exceptions import MonthInvalidAPI, PhoneNumberInvalidAPI
+from .exceptions import MonthInvalidAPIError, PhoneNumberInvalidAPIError
 from .serializers import (CallEndSerializer, CallSerializer,
                           CallStartSerializer, MonthBillSerializer)
 from .utils import calculate_price, get_correct_date
 
 # Create your views here.
+
 
 class MonthlyBillingView(APIView):
     queryset = Call.objects.all()
@@ -23,10 +23,10 @@ class MonthlyBillingView(APIView):
         is_valid_phone = re.compile(r'^\d{10,11}$').match(phone_number)
         # If it isn't, return a 400 BAD REQUEST response
         if not is_valid_phone:
-            raise PhoneNumberInvalidAPI()
+            raise PhoneNumberInvalidAPIError()
 
         if(month is not None and (int(month) <= 1 or int(month) >= 12)):
-            raise MonthInvalidAPI()
+            raise MonthInvalidAPIError*()
 
         month, year = get_correct_date(month, year)
         print(month, year)
@@ -37,13 +37,12 @@ class MonthlyBillingView(APIView):
         calls_dict = []
         
         for call in calls:
-            a = {'source'   : call.call_start.get().source,
-                'date'      : call.call_start.get().timestamp.date(),
-                'time'      : call.call_start.get().timestamp.time(),
-                'duration'  : call.duration,
-                'price'     : call.price}            
-            calls_dict.append( a )
-        
+            a = {'source': call.call_start.get().source,
+                 'date': call.call_start.get().timestamp.date(),
+                 'time': call.call_start.get().timestamp.time(),
+                 'duration': call.duration,
+                 'price': call.price}            
+            calls_dict.append(a)
         
         serializer = MonthBillSerializer(calls_dict, many=True)
         return Response(serializer.data)
@@ -75,7 +74,7 @@ class CreateCallViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             call = Call()
             call.save()
-            callstart = serializer.save(call_id=call)
+            serializer.save(call_id=call)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -90,5 +89,5 @@ class EndCallViewSet(viewsets.ModelViewSet):
         call = Call.objects.get(id=endcall.call_id.id)
         callstart = CallStart.objects.get(call_id=endcall.call_id.id)       
         call.duration = endcall.timestamp - callstart.timestamp 
-        call.price  = calculate_price(callstart.timestamp, endcall.timestamp)
+        call.price = calculate_price(callstart.timestamp, endcall.timestamp)
         call.save()

@@ -13,17 +13,17 @@ def get_correct_date(month=None, year=None):
     """
     if (month is None): 
         #print("month none:")
-        month = datetime.now().month -1
+        month = datetime.now().month - 1
     if (year is None): 
         #print("year none:")
-        year = datetime.now().year 
+        year = datetime.now().year
 
-    createdate = datetime(int(year), int(month), datetime.now().day, 0, 0, 0)  
+    createdate = datetime(int(year), int(month), datetime.now().day, 0, 0, 0)
 
-    if(createdate.date() >= datetime.now().date() ):
+    if(createdate.date() >= datetime.now().date()):
         #print("date > datetime.now().date ")
-        month = datetime.now().month -1
-        year = datetime.now().year 
+        month = datetime.now().month - 1
+        year = datetime.now().year
 
     return [month, year]
     
@@ -43,11 +43,14 @@ def calculate_price(timestamp_start, timestamp_end):
 
     #for each day a full minutes
     #
-    if(days>0):
+    if(days > 0):
         print("days:", days)
         minutes_standard_days = days * 16 * 60
         minutes_reduced_days = days * 8 * 60
-        timestamp_end = datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, timestamp_end.hour, timestamp_end.minute, timestamp_end.second, tzinfo=pytz.utc)
+        timestamp_end = datetime(timestamp_start.year, timestamp_start.month, 
+                                 timestamp_start.day, timestamp_end.hour, 
+                                 timestamp_end.minute, timestamp_end.second, 
+                                 tzinfo=pytz.utc)
         print("FIM:", timestamp_end)
 
     for plan in rate_plans:
@@ -56,22 +59,23 @@ def calculate_price(timestamp_start, timestamp_end):
         
         if (timestamp_start.hour <= timestamp_end.hour):
             print("timestamp_start.hour < timestamp_end.hour")
-            if(timestamp_start.hour >= plan.standard_time_start.hour and timestamp_end.hour < plan.standard_time_end.hour):
+            if(timestamp_start.hour >= plan.standard_time_start.hour and
+                    timestamp_end.hour < plan.standard_time_end.hour):
                 print("Standard time call")
                 duration_standard = timestamp_end - timestamp_start  
-            elif(timestamp_end.hour < plan.standard_time_start.hour ):
+            elif(timestamp_end.hour < plan.standard_time_start.hour):
                 print("REDUCED time call (timestamp_start.hour and timestamp_end.hour) < plan.standard_time_start.hour ")
                 d2 = d1
-            elif (timestamp_start.hour  >= plan.standard_time_end.hour ):
+            elif (timestamp_start.hour  >= plan.standard_time_end.hour):
                 print("REDUCED time call (timestamp_start.hour and timestamp_end.hour) > plan.standard_time_end.hour ")
                 d2 = d1                
             elif(timestamp_start.hour < plan.standard_time_start.hour):
                 print("timestamp_start.hour < plan.standard_time_start.hour")
                 d1 = datetime(timestamp_start.year,  timestamp_start.month, timestamp_start.day, plan.standard_time_start.hour, 0, 0, tzinfo=pytz.utc)                 
-                if(timestamp_end.hour > plan.standard_time_end.hour ):
+                if(timestamp_end.hour > plan.standard_time_end.hour:
                     d2 = datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, plan.standard_time_end.hour  , 0, 0, tzinfo=pytz.utc) 
             else:
-                if(timestamp_end.hour > plan.standard_time_end.hour ):
+                if(timestamp_end.hour > plan.standard_time_end.hour):
                     print("timestamp_end.hour > plan.standard_time_end.hour ")
                     d2 = datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, plan.standard_time_end.hour  , 0, 0, tzinfo=pytz.utc) 
         else:
@@ -91,19 +95,19 @@ def calculate_price(timestamp_start, timestamp_end):
                     d2 = datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, plan.standard_time_end.hour  , 0, 0, tzinfo=pytz.utc)
                 else:
                     print("WWWWWW  ELSE timestamp_end.hour < plan.standard_time_start.hour")
-                    d1 =  datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, plan.standard_time_end.hour  , 0, 0, tzinfo=pytz.utc) - timestamp_start
+                    d1 = datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, plan.standard_time_end.hour  , 0, 0, tzinfo=pytz.utc) - timestamp_start
                     d2 = timestamp_end - datetime(timestamp_end.year, timestamp_end.month, timestamp_end.day, plan.standard_time_start.hour  , 0, 0, tzinfo=pytz.utc)
-                    duration_standard =  d2 + d1 
+                    duration_standard = d2 + d1 
                     two_intervals = True      
 
         if(not two_intervals):
-            duration_standard =  d2 - d1
+            duration_standard = d2 - d1
                 
     total_standard_minutes = calc_total_minutes(duration_standard, minutes_standard_days)
     #total_reduced_minutes = calc_total_minutes(duration_reduced, minutes_reduced_days)
     
     price_standard = plan.standing_time_minute * total_standard_minutes + tax
-    price_reduced  = plan.reduced_time_minute 
+    price_reduced = plan.reduced_time_minute 
 
     print("Duração standard a pagar: ", duration_standard)
     print("Minutos standard a pagar: ", total_standard_minutes)
