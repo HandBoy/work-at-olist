@@ -10,8 +10,22 @@ TYPE = (
 
 
 class Call(models.Model):
-    duration = models.DurationField(blank=True, default=timedelta())
+    duration = models.DurationField(blank=True)
     price = models.FloatField(blank=True, default=0)
+
+    def get_duration(self):
+        # formating duration
+        days = self.duration.days
+        seconds = self.duration.seconds
+
+        minutes = seconds // 60
+        seconds = seconds % 60
+
+        hours = minutes // 60 + (days*24)
+        minutes = minutes % 60
+
+        return '{:02d}h:{:02d}m:{:02d}s'.format(hours, minutes, seconds)
+
 
 
 class CallStart(models.Model):
@@ -24,12 +38,12 @@ class CallStart(models.Model):
 
     def __str__(self):
         return self.source
-
+        
 
 class CallEnd(models.Model):
     type = models.CharField(max_length=1, choices=TYPE, default='E')
     timestamp = models.DateTimeField(auto_now_add=True)
-    call_id = models.ForeignKey(Call, on_delete=models.CASCADE, 
+    call_id = models.ForeignKey(Call, on_delete=models.CASCADE,
                                 related_name='call_end')
 
 

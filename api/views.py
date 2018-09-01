@@ -140,6 +140,8 @@ class EndCallViewSet(APIView):
 
     Return
     -------
+     A dict mapping keys to the corresponding
+
     - `destination`: **str**
         number for callers
     - `date`: **str**
@@ -154,8 +156,8 @@ class EndCallViewSet(APIView):
             {
                 "destination": "84998182665",
                 "date": "2018-09-01",
-                "time": "14:59:50.948458",
-                "duration": "1:54:26.214945",
+                "time": "14:59:50.94845",
+                "duration": "1h54h26s",
                 "price": 10.62
             }
 
@@ -182,7 +184,7 @@ class EndCallViewSet(APIView):
                 'destination': call_start.destination,
                 'date': call_start.timestamp.date(),
                 'time': call_start.timestamp.time(),
-                'duration': call.duration,
+                'duration': call.get_duration(),
                 'price': call.price
             })
         return Response(serializer.data, status=status.HTTP_201_CREATED)
