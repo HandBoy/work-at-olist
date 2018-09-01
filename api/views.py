@@ -9,9 +9,9 @@ from rest_framework.views import APIView
 from calls.models import Call, CallEnd, CallStart
 
 from .exceptions import MonthInvalidAPIError, PhoneNumberInvalidAPIError
-from .serializers import (CallEndSerializer, CallSerializer,
-                          CallStartSerializer, MonthBillSerializer,
-                          CallAfterStartSerializer)
+from .serializers import (
+                         CallSerializer, CallStartSerializer,
+                         MonthBillSerializer, CallAfterStartSerializer)
 
 from .utils import calculate_price, get_correct_date
 
@@ -123,7 +123,7 @@ class CreateCallViewSet(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-       
+
 
 class EndCallViewSet(APIView):
     """
