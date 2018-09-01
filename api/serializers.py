@@ -9,27 +9,13 @@ class CallStartSerializer(serializers.ModelSerializer):
         fields = ('source', 'destination')
 
 
-class CallEndSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CallEnd
-        fields = '__all__'
-
-
 class CallSerializer(serializers.Serializer):
     class Meta:
         model = Call
         fields = '__all__'
 
 
-class CallStartField(serializers.RelatedField):
-    def to_representation(self, value):
-        start_date = value.timestamp.date()
-        start_time = value.timestamp.time()
-        return 'source: %s date: %s time: %s' % (value.source, start_date, start_time)
-
-
-class MonthBillSerializer(serializers.Serializer):    
-
+class MonthBillSerializer(serializers.Serializer):
     destination = serializers.CharField(max_length=200)
     date = serializers.CharField(max_length=200)
     time = serializers.CharField(max_length=200)
