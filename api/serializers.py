@@ -34,3 +34,10 @@ class MonthBillSerializer(serializers.Serializer):
     time = serializers.CharField(max_length=200)
     duration = serializers.CharField(max_length=200)
     price = serializers.FloatField()
+
+
+class CallAfterStartSerializer(serializers.Serializer):
+    call_id = serializers.IntegerField()
+    source = serializers.CharField(max_length=200)
+    destination = serializers.CharField(max_length=200)
+    time = serializers.CharField(max_length=200)
