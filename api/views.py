@@ -8,7 +8,9 @@ from calls.models import Call, CallEnd, CallStart
 
 from .exceptions import MonthInvalidAPIError, PhoneNumberInvalidAPIError
 from .serializers import (CallEndSerializer, CallSerializer,
-                          CallStartSerializer, MonthBillSerializer)
+                          CallStartSerializer, MonthBillSerializer,
+                          CallAfterStartSerializer)
+
 from .utils import calculate_price, get_correct_date
 
 # Create your views here.
@@ -65,20 +67,61 @@ class CalculateCallViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class CreateCallViewSet(viewsets.ModelViewSet):
+class CreateCallViewSet(APIView):
+    """
+    Create a phone call
+
+    Parameters
+    ----------
+    - `source`: **str**
+        number of who made the phone call
+    - `destination`: **str**
+        number for callers
+
+            {
+                "source": "84998182665",
+                "destination": "8499818230"
+            }
+
+    Return
+    -------
+    - `call_id`: **int**
+        will important for end this create call
+    - `source`: **str**
+        number of who made the phone call
+    - `destination`: **str**
+        number for callers
+    - `time`: **str**
+        generated at creation with the date and time of the start of the call
+
+            {
+                "call_id": 91,
+                "source": "84998182665",
+                "destination": "8499818230",
+                "time": "2018-09-01 14:59:50.948458+00:00"
+            }
+    """
     queryset = CallStart.objects.all()
     serializer_class = CallStartSerializer
 
-    def create(self, request):
+    def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             call = Call()
             call.save()
-            serializer.save(call_id=call)
+            call_start = serializer.save(call_id=call)
+
+            serializer = CallAfterStartSerializer({
+                'call_id': call.pk,
+                'source': call_start.source,
+                'destination': call_start.destination,
+                'time': call_start.timestamp
+            })
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+       
 
 class EndCallViewSet(viewsets.ModelViewSet):
     queryset = CallEnd.objects.all()
