@@ -29,7 +29,7 @@ class CallStartField(serializers.RelatedField):
 
 
 class MonthBillSerializer(serializers.Serializer):
-    source = serializers.CharField(max_length=200)
+    destination = serializers.CharField(max_length=200)
     date = serializers.CharField(max_length=200)
     time = serializers.CharField(max_length=200)
     duration = serializers.CharField(max_length=200)
