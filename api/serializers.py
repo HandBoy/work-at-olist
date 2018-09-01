@@ -28,12 +28,13 @@ class CallStartField(serializers.RelatedField):
         return 'source: %s date: %s time: %s' % (value.source, start_date, start_time)
 
 
-class MonthBillSerializer(serializers.Serializer):
+class MonthBillSerializer(serializers.Serializer):    
+
     destination = serializers.CharField(max_length=200)
     date = serializers.CharField(max_length=200)
     time = serializers.CharField(max_length=200)
     duration = serializers.CharField(max_length=200)
-    price = serializers.FloatField()
+    price = serializers.CharField(max_length=10)
 
 
 class CallAfterStartSerializer(serializers.Serializer):

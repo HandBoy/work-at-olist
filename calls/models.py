@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.db import models
 
 # Create your models here.
@@ -26,6 +24,8 @@ class Call(models.Model):
 
         return '{:02d}h:{:02d}m:{:02d}s'.format(hours, minutes, seconds)
 
+    def format_price(self):
+        return ('R$%.2f' % (self.price))
 
 
 class CallStart(models.Model):
@@ -38,7 +38,7 @@ class CallStart(models.Model):
 
     def __str__(self):
         return self.source
-        
+
 
 class CallEnd(models.Model):
     type = models.CharField(max_length=1, choices=TYPE, default='E')

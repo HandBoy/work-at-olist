@@ -150,7 +150,7 @@ class EndCallViewSet(APIView):
         time of phone call
     - `duration`: **str**
         phone call duration
-    - `price`: **float**
+    - `price`: **str**
         the cost of the phone call
 
             {
@@ -158,7 +158,7 @@ class EndCallViewSet(APIView):
                 "date": "2018-09-01",
                 "time": "14:59:50.94845",
                 "duration": "1h54h26s",
-                "price": 10.62
+                "price": "R$10.62"
             }
 
     Raises
@@ -185,6 +185,6 @@ class EndCallViewSet(APIView):
                 'date': call_start.timestamp.date(),
                 'time': call_start.timestamp.time(),
                 'duration': call.get_duration(),
-                'price': call.price
+                'price': call.format_price()
             })
         return Response(serializer.data, status=status.HTTP_201_CREATED)
