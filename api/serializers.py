@@ -6,7 +6,7 @@ from calls.models import Call, CallEnd, CallStart
 class CallStartSerializer(serializers.ModelSerializer):
     class Meta:
         model = CallStart
-        fields = ('source', 'destination','timestamp')
+        fields = ('source', 'destination')
 
 
 class CallEndSerializer(serializers.ModelSerializer):
