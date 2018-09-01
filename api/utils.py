@@ -72,7 +72,7 @@ def calculate_price(timestamp_start, timestamp_end):
             elif(timestamp_start.hour < plan.standard_time_start.hour):
                 print("timestamp_start.hour < plan.standard_time_start.hour")
                 d1 = datetime(timestamp_start.year,  timestamp_start.month, timestamp_start.day, plan.standard_time_start.hour, 0, 0, tzinfo=pytz.utc)                 
-                if(timestamp_end.hour > plan.standard_time_end.hour:
+                if(timestamp_end.hour > plan.standard_time_end.hour):
                     d2 = datetime(timestamp_start.year, timestamp_start.month, timestamp_start.day, plan.standard_time_end.hour  , 0, 0, tzinfo=pytz.utc) 
             else:
                 if(timestamp_end.hour > plan.standard_time_end.hour):
