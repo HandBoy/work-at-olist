@@ -1,5 +1,7 @@
 import re
 
+from django.shortcuts import get_object_or_404
+
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -123,14 +125,64 @@ class CreateCallViewSet(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
        
 
-class EndCallViewSet(viewsets.ModelViewSet):
-    queryset = CallEnd.objects.all()
-    serializer_class = CallEndSerializer
+class EndCallViewSet(APIView):
+    """
+    Calculate the duration, price and ending a call
 
-    def perform_create(self, serializer):
-        endcall = serializer.save()       
-        call = Call.objects.get(id=endcall.call_id.id)
-        callstart = CallStart.objects.get(call_id=endcall.call_id.id)       
-        call.duration = endcall.timestamp - callstart.timestamp 
-        call.price = calculate_price(callstart.timestamp, endcall.timestamp)
+    Parameters
+    ----------
+    - `call_id`: **int**
+        Call id to finish phone call
+
+            {
+                "call_id": 91
+            }
+
+    Return
+    -------
+    - `destination`: **str**
+        number for callers
+    - `date`: **str**
+        date of phone call
+    - `time`: **str**
+        time of phone call
+    - `duration`: **str**
+        phone call duration
+    - `price`: **float**
+        the cost of the phone call
+
+            {
+                "destination": "84998182665",
+                "date": "2018-09-01",
+                "time": "14:59:50.948458",
+                "duration": "1:54:26.214945",
+                "price": 10.62
+            }
+
+    Raises
+    ------
+    KeyError
+        when a key error
+    OtherError
+        when an other error
+    """
+    queryset = Call.objects.all()
+
+    def put(self, request):
+        call = get_object_or_404(self.queryset,
+                                 pk=request.data["call_id"])
+
+        end_call = CallEnd(call_id=call)
+        end_call.save()    
+        call_start = CallStart.objects.get(call_id=call)
+        call.duration = end_call.timestamp - call_start.timestamp
+        call.price = calculate_price(call_start.timestamp, end_call.timestamp)
         call.save()
+        serializer = MonthBillSerializer({
+                'destination': call_start.destination,
+                'date': call_start.timestamp.date(),
+                'time': call_start.timestamp.time(),
+                'duration': call.duration,
+                'price': call.price
+            })
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
