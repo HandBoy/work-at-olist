@@ -184,7 +184,7 @@ class EndCallViewSet(APIView):
                 'destination': call_start.destination,
                 'date': call_start.timestamp.date(),
                 'time': call_start.timestamp.time(),
-                'duration': call.get_duration(),
+                'duration': call.format_duration(),
                 'price': call.format_price()
             })
         return Response(serializer.data, status=status.HTTP_201_CREATED)

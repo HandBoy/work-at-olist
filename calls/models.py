@@ -11,17 +11,12 @@ class Call(models.Model):
     duration = models.DurationField(blank=True)
     price = models.FloatField(blank=True, default=0)
 
-    def get_duration(self):
+    def format_duration(self):
         # formating duration
-        days = self.duration.days
-        seconds = self.duration.seconds
-
-        minutes = seconds // 60
+        days, seconds = self.duration.days, self.duration.seconds
+        hours = (days * 24) + (seconds // 3600)
+        minutes = (seconds % 3600) // 60
         seconds = seconds % 60
-
-        hours = minutes // 60 + (days*24)
-        minutes = minutes % 60
-
         return '{:02d}h:{:02d}m:{:02d}s'.format(hours, minutes, seconds)
 
     def format_price(self):
