@@ -192,7 +192,7 @@ class CreateCallViewSet(APIView):
                 call_start = serializer.save(call_id=call)
             except ValidationError as err:
                 call.delete()
-                return Response(data=err, status=400)
+                return Response(data=err, status=status.HTTP_400_BAD_REQUEST)
 
             serializer = CallAfterStartSerializer({
                 'call_id': call.pk,
