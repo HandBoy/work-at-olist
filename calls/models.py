@@ -14,8 +14,8 @@ RECORD_TYPES = (
     ('E', 'End'),
 )
 
-# Here we define what a valid phone number is,
-# following the repository's guidelines
+# Setting the validator for the phone according to the 
+# the repository's guidelines
 # Phone numbers have to be all digits (0-9)
 # Their length has to be between 10 (2 area digits + 8 phone digits)
 # and 11 (2 area digits + 9 phone digits)
@@ -28,11 +28,19 @@ phone_validator_regex = RegexValidator(
 
 
 class Call(models.Model):
+    """
+    Class to save a duration and price of a call
+    Its is the link (one to one) between classes StartCall and EndCall
+    """
     duration = models.DurationField(blank=True, null=True)
     price = models.FloatField(blank=True, default=0)
 
     def format_duration(self):
-        # formating duration
+        """
+        format the duration according the repository's guidelines
+        if duration: 11:43:23.032322
+        this return: 11h43m23s
+        """
         days, seconds = self.duration.days, self.duration.seconds
         hours = (days * 24) + (seconds // 3600)
         minutes = (seconds % 3600) // 60
@@ -40,10 +48,19 @@ class Call(models.Model):
         return '{:02d}h:{:02d}m:{:02d}s'.format(hours, minutes, seconds)
 
     def format_price(self):
+        """
+        format the price according the repository's guidelines
+        if prive: 6.3452234
+        this return: R$6.34
+        """
         return ('R$%.2f' % (self.price))
 
 
 class CallStart(models.Model):
+    """
+    Class to save when the call started, 
+    what number started the call and the number that received the call
+    """
     type = models.CharField(
         max_length=1,
         choices=TYPE,
@@ -69,6 +86,9 @@ class CallStart(models.Model):
 
 
 class CallEnd(models.Model):
+    """
+    Class to save when the call ended
+    """
     type = models.CharField(
         max_length=1,
         choices=TYPE,
@@ -81,6 +101,10 @@ class CallEnd(models.Model):
 
 
 class RatePlans(models.Model):
+    """
+    Class to save a duration and price of a call
+    Its is the link (one to one) between classes StartCall and EndCall
+    """
     name = models.CharField(max_length=100)
     standard_time_start = models.TimeField()
     standard_time_end = models.TimeField()
