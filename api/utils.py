@@ -1,33 +1,60 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime
 
 import pytz
 
 from calls.models import RatePlans
 
+from .exceptions import MonthInvalidAPIError
+
 
 def get_correct_date(month=None, year=None):
     """
     Get the previous month.
-        Args:
-            date_ (Date object):
+
+    Verify that the month parameter exists or is different
+    from the current. If false, return the previous month
+
+    Parameters
+    ----------
+        - `month`: **str** *optional*
+            number for callers
+        - `year`: **str** *optional*
+            number for callers
+
+    Return
+    ----------
+    List with month and year adjusted
+            actual month: 8/2018
+            get_correct_date(8,2018) return [7, 2018]
+            get_correct_date(8,2019) return [7, 2018]
+            get_correct_date(7,2018) return [7, 2018]
+            get_correct_date(2018) return [7, 2018]
+            get_correct_date() return [7, 2018]
     """
-    if (month is None): 
-        #print("month none:")
+
+    if (month is None):
         month = datetime.now().month - 1
-    if (year is None): 
-        #print("year none:")
+
+    if (year is None):
         year = datetime.now().year
+
+    if ((int(month) < 1) or (int(month) > 12)):
+        raise MonthInvalidAPIError()
 
     createdate = datetime(int(year), int(month), datetime.now().day, 0, 0, 0)
 
     if(createdate.date() >= datetime.now().date()):
-        #print("date > datetime.now().date ")
         month = datetime.now().month - 1
         year = datetime.now().year
+        # if current month is the first month of the year
+        if month <= 0:
+            month = 12
+            year = createdate.year - 1
+    print([month, year])
 
     return [month, year]
-    
-    
+
+
 def calculate_price(timestamp_start, timestamp_end):        
     minutes_standard_days = 0
     minutes_reduced_days = 0
