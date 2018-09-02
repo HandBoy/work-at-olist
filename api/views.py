@@ -1,5 +1,6 @@
 import re
 
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets
@@ -173,6 +174,10 @@ class CreateCallViewSet(APIView):
     **field is required.**
         HTTP 400 Bad Request.
         source and destination are required
+
+    **source equals destination.**
+        HTTP 400 Bad Request.
+        Cannot create a call with no source
     """
     queryset = CallStart.objects.all()
     serializer_class = CallStartSerializer
@@ -182,7 +187,12 @@ class CreateCallViewSet(APIView):
         if serializer.is_valid():
             call = Call()
             call.save()
-            call_start = serializer.save(call_id=call)
+
+            try:
+                call_start = serializer.save(call_id=call)
+            except ValidationError as err:
+                call.delete()
+                return Response(data=err, status=400)
 
             serializer = CallAfterStartSerializer({
                 'call_id': call.pk,
