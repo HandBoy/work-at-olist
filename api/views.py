@@ -102,6 +102,13 @@ class CreateCallViewSet(APIView):
                 "destination": "8499818230",
                 "time": "2018-09-01 14:59:50.948458+00:00"
             }
+
+    Raises
+    ------
+    **Phone numbers**:
+        HTTP 400 Bad Request.
+        Phone numbers must be all digits, with 2 area code digits 
+        and 8 or 9 phone number digits.
     """
     queryset = CallStart.objects.all()
     serializer_class = CallStartSerializer
@@ -163,10 +170,9 @@ class EndCallViewSet(APIView):
 
     Raises
     ------
-    KeyError
-        when a key error
-    OtherError
-        when an other error
+    **Id Call Not Found**:
+        HTTP 404 Not Found.
+        Not found. Phone call not found in database.
     """
     queryset = Call.objects.all()
 
