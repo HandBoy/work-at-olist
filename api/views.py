@@ -19,8 +19,68 @@ from .utils import calculate_price, get_correct_date
 
 
 class MonthlyBillingView(APIView):
+    """
+    Get the phone calls of a month
+
+    This method receives, by url, a phone number and optionally a year and 
+    a month period to calculate a bill. 
+    If the year or month parameter is not passed, it assumes the last month 
+    last month of the same year.
+
+    Parameters
+    ----------
+    - `phone_number`: **int** *required*
+        number of who made the phone call
+    - `year`: **str** *optional*
+        number for callers
+    - `month`: **str** *optional*
+        number for callers
+
+
+    Return
+    -------
+    A dict with phone calls that month or last month 
+    mapping keys to the corresponding
+
+
+    - `destination`: **str**
+        number for callers
+    - `date`: **str**
+        date of phone call
+    - `time`: **str**
+        time of phone call
+    - `duration`: **str**
+        phone call duration
+    - `price`: **str**
+        the cost of the phone call
+
+            GET /api/billing/84998182665/2018/07/
+            [
+                {
+                    "destination": "84996463254",
+                    "date": "2018-06-30",
+                    "time": "23:35:05.470011",
+                    "duration": "07h:05m:00s",
+                    "price": "R$3.96"
+                },
+                {
+                    "destination": "84996463254",
+                    "date": "2018-07-28",
+                    "time": "16:07:48.366749",
+                    "duration": "00h:09m:15s",
+                    "price": "R$1.17"
+                }
+            ]
+
+    Raises
+    ------
+    **Invalid Phone Number**:
+        HTTP 400 Bad Request.
+        Phone numbers must be all digits, with 2 area code digits
+        and 8 or 9 phone number digits.
+    """
     queryset = Call.objects.all()
-    
+
     def get(self, request, phone_number, year=None, month=None):
         # First, we need to validate if the phone number received
         # is valid
@@ -30,24 +90,24 @@ class MonthlyBillingView(APIView):
             raise PhoneNumberInvalidAPIError()
 
         if(month is not None and (int(month) <= 1 or int(month) >= 12)):
-            raise MonthInvalidAPIError*()
+            raise MonthInvalidAPIError()
 
         month, year = get_correct_date(month, year)
         print(month, year)
-        calls = Call.objects.filter(call_start__source=phone_number, 
+        calls = Call.objects.filter(call_start__source=phone_number,
                                     call_end__timestamp__month=month,
                                     call_end__timestamp__year=year)
 
         calls_dict = []
-        
+
         for call in calls:
-            a = {'source': call.call_start.get().source,
+            a = {'destination': call.call_start.get().destination,
                  'date': call.call_start.get().timestamp.date(),
                  'time': call.call_start.get().timestamp.time(),
-                 'duration': call.duration,
-                 'price': call.price}            
+                 'duration': call.format_duration,
+                 'price': call.format_price}
             calls_dict.append(a)
-        
+
         serializer = MonthBillSerializer(calls_dict, many=True)
         return Response(serializer.data)
 
@@ -56,13 +116,13 @@ class CalculateCallViewSet(viewsets.ModelViewSet):
     queryset = Call.objects.all()
     serializer_class = CallSerializer
 
-    def retrieve(self, request, pk=None):        
+    def retrieve(self, request, pk=None):
         call = Call.objects.get(id=pk)
         call_start = CallStart.objects.get(call_id=pk)
-        call_end = CallEnd.objects.get(call_id=pk)    
+        call_end = CallEnd.objects.get(call_id=pk)
 
-        call.duration = call_end.timestamp - call_start.timestamp  
-        call.price = calculate_price(call_start.timestamp, call_end.timestamp)  
+        call.duration = call_end.timestamp - call_start.timestamp
+        call.price = calculate_price(call_start.timestamp, call_end.timestamp)
         call.save()
 
         serializer = CallSerializer(call)
@@ -105,10 +165,14 @@ class CreateCallViewSet(APIView):
 
     Raises
     ------
-    **Phone numbers**:
+    **Invalid Phone Number**:
         HTTP 400 Bad Request.
-        Phone numbers must be all digits, with 2 area code digits 
+        Phone numbers must be all digits, with 2 area code digits
         and 8 or 9 phone number digits.
+
+    **field is required.**
+        HTTP 400 Bad Request.
+        source and destination are required
     """
     queryset = CallStart.objects.all()
     serializer_class = CallStartSerializer
@@ -181,7 +245,7 @@ class EndCallViewSet(APIView):
                                  pk=request.data["call_id"])
 
         end_call = CallEnd(call_id=call)
-        end_call.save()    
+        end_call.save()
         call_start = CallStart.objects.get(call_id=call)
         call.duration = end_call.timestamp - call_start.timestamp
         call.price = calculate_price(call_start.timestamp, end_call.timestamp)
