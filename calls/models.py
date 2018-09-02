@@ -90,12 +90,11 @@ class CallStart(models.Model):
         Validates that call records cannot have the same source and
         destination, or one of these fields and not the other
         '''
-        print("validate_source_and_destination")
-        if self.source is not None:
+        if self.source is None:
             raise ValidationError(
                 'Cannot create a call with no source')
 
-        elif self.destination is not None:
+        elif self.destination is None:
             raise ValidationError(
                 'Cannot create a call without no destination')
 
@@ -110,7 +109,7 @@ class CallStart(models.Model):
 
         Override the models.Model.save() method to ensure
         don't create a record in which there are invalid or
-        inconsistent fields, using the custom validation methods
+        inconsistent fields.
         """
         self.validate_source_and_destination()
 

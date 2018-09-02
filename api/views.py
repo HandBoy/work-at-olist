@@ -177,7 +177,7 @@ class CreateCallViewSet(APIView):
 
     **source equals destination.**
         HTTP 400 Bad Request.
-        Cannot create a call with no source
+        annot create a call where source is equals as the destination.
     """
     queryset = CallStart.objects.all()
     serializer_class = CallStartSerializer
