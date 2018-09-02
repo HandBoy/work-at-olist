@@ -14,7 +14,7 @@ RECORD_TYPES = (
     ('E', 'End'),
 )
 
-# Setting the validator for the phone according to the 
+# Setting the validator for the phone according to the
 # the repository's guidelines
 # Phone numbers have to be all digits (0-9)
 # Their length has to be between 10 (2 area digits + 8 phone digits)
@@ -58,7 +58,7 @@ class Call(models.Model):
 
 class CallStart(models.Model):
     """
-    Class to save when the call started, 
+    Class to save when the call started,
     what number started the call and the number that received the call
     """
     type = models.CharField(
@@ -95,7 +95,7 @@ class CallEnd(models.Model):
         default='E')
     timestamp = models.DateTimeField(auto_now_add=True)
     call_id = models.ForeignKey(
-        Call, 
+        Call,
         on_delete=models.CASCADE,
         related_name='call_end')
 
