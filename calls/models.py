@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 TYPE = (
@@ -83,6 +84,37 @@ class CallStart(models.Model):
 
     def __str__(self):
         return self.source
+
+    def validate_source_and_destination(self):
+        '''
+        Validates that call records cannot have the same source and
+        destination, or one of these fields and not the other
+        '''
+        print("validate_source_and_destination")
+        if self.source is not None:
+            raise ValidationError(
+                'Cannot create a call with no source')
+
+        elif self.destination is not None:
+            raise ValidationError(
+                'Cannot create a call without no destination')
+
+        elif self.source == self.destination:
+            raise ValidationError(
+                'Cannot create a call where source'
+                + ' is the same as the destination.')
+
+    def save(self, *args, **kwargs):
+        """
+        Validate models fields
+
+        Override the models.Model.save() method to ensure
+        don't create a record in which there are invalid or
+        inconsistent fields, using the custom validation methods
+        """
+        self.validate_source_and_destination()
+
+        super(CallStart, self).save(*args, **kwargs)
 
 
 class CallEnd(models.Model):
