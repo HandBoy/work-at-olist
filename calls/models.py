@@ -3,6 +3,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
+
 # Create your models here.
 TYPE = (
     ('S', 'Start'),
@@ -102,6 +103,16 @@ class CallStart(models.Model):
             raise ValidationError(
                 'Cannot create a call where source'
                 + ' is the same as the destination.')
+
+        elif ((len(self.source) < 9) or (len(self.source) < 11)):
+            raise ValidationError(
+                'Phone numbers must be all digits, with 2 area code digits'
+                + ' and 8 or 9 phone number digits.')
+
+        elif ((len(self.destination) < 9) or (len(self.destination) < 11)):
+            raise ValidationError(
+                'Phone numbers must be all digits, with 2 area code digits'
+                + ' and 8 or 9 phone number digits.')
 
     def save(self, *args, **kwargs):
         """
