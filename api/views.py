@@ -23,9 +23,9 @@ class MonthlyBillingView(APIView):
     """
     Get the phone calls of a month
 
-    This method receives, by url, a phone number and optionally a year and 
+    This method receives, by url, a phone number and optionally a year and
     a month period to calculate a bill. 
-    If the year or month parameter is not passed, it assumes the last month 
+    If the year or month parameter is not passed, it assumes the last month
     last month of the same year.
 
     Parameters
@@ -251,8 +251,13 @@ class EndCallViewSet(APIView):
     queryset = Call.objects.all()
 
     def put(self, request):
-        call = get_object_or_404(self.queryset,
-                                 pk=request.data["call_id"])
+        try:
+            call_id = request.data['call_id']
+        except KeyError as err:
+            return Response(data='{"Error": "require field call_id"}',
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        call = get_object_or_404(self.queryset, pk=call_id)
 
         end_call = CallEnd(call_id=call)
         end_call.save()

@@ -1,4 +1,9 @@
+from datetime import time
+
 from django.test import TestCase
+
+from calls.models import RatePlans
+
 
 # Create your tests here.
 
@@ -108,13 +113,88 @@ class TesteCreateCallViewSet(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_valid_phone_number(self):
-        invalid_data = ('{'
-                        + '"source": "84998182665",'
-                        + '"destination": "84998182635" }')
+        valid_data = ('{'
+                      + '"source": "84998182665",'
+                      + '"destination": "84998182635" }')
         response = self.client.post(
             '/api/startcall/',
             content_type='application/json',
+            data=valid_data,
+            follow=True)
+        self.assertEqual(response.status_code, 201)
+
+
+class EndCallViewSet(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        print("SETUP")   
+        RatePlans.objects.get_or_create(
+            name='Standard time call',
+            standard_time_start=time(6, 0, 0),
+            standard_time_end=time(22, 0, 0),
+            standing_time_charge=0.36,
+            standing_time_minute=0.09,
+            reduced_time_start=time(22, 0, 0),
+            reduced_time_end=time(6, 0, 0),
+            reduced_time_charge=0.36,
+            reduced_time_minute=0.09
+            )
+
+    def test_not_allowed_get_method(self):
+        response = self.client.get(
+            '/api/endcall/',
+            follow=True)
+        self.assertEqual(response.status_code, 405)
+
+    def test_not_allowed_post_method(self):
+        response = self.client.post(
+            '/api/endcall/',
+            content_type='application/json',
+            follow=True)
+        self.assertEqual(response.status_code, 405)
+
+    def test_not_allowed_delete_method(self):
+        response = self.client.delete(
+            '/api/endcall/',
+            content_type='application/json',
+            follow=True)
+        self.assertEqual(response.status_code, 405)
+
+    def test_send_invalid_data_empty(self):
+        invalid_data = '{}'
+        response = self.client.put(
+            '/api/endcall/',
+            content_type='application/json',
             data=invalid_data,
             follow=True)
-        self.assertEqual(response.status_code, 201)     
+        self.assertEqual(response.status_code, 400)
 
+    def test_send_invalid_field_and_id(self):
+        invalid_data = '{"id": 999999}'
+        response = self.client.put(
+            '/api/endcall/',
+            content_type='application/json',
+            data=invalid_data,
+            follow=True)
+        self.assertEqual(response.status_code, 400)
+
+    def test_send_valid_id(self):
+        valid_data = ('{'
+                      + '"source": "84998182665",'
+                      + '"destination": "84998182635" }')
+        response = self.client.post(
+            '/api/startcall/',
+            content_type='application/json',
+            data=valid_data,
+            follow=True)
+
+        call_id = response.data['call_id']
+
+        valid_data = ("{\"call_id\": %d }" % call_id)
+
+        response = self.client.put(
+            '/api/endcall/',
+            content_type='application/json',
+            data=valid_data,
+            follow=True)
+        self.assertEqual(response.status_code, 201)
