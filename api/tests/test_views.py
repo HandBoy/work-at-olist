@@ -127,7 +127,6 @@ class TesteCreateCallViewSet(TestCase):
 class EndCallViewSet(TestCase):
     @classmethod
     def setUpTestData(cls):
-        print("SETUP")   
         RatePlans.objects.get_or_create(
             name='Standard time call',
             standard_time_start=time(6, 0, 0),
@@ -198,3 +197,73 @@ class EndCallViewSet(TestCase):
             data=valid_data,
             follow=True)
         self.assertEqual(response.status_code, 201)
+
+
+class MonthlyBilling(TestCase):
+    def test_no_phone_year_and_month(self):
+        response = self.client.put(
+            '/api/billing/',
+            follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_little_phone_and_no_year_and_month(self):
+        response = self.client.put(
+            '/api/billing/123',
+            follow=True)
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_little_phone_and_year_and_no_month(self):
+        response = self.client.put(
+            '/api/billing/123/123',
+            follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_little_phone_month(self):
+        response = self.client.put(
+            '/api/billing/123/2018/123',
+            follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_little_phone_month_with_year_and_month(self):
+        response = self.client.put(
+            '/api/billing/123/2018/08',
+            follow=True)
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_bigger_phone_and_no_year_and_month(self):
+        response = self.client.put(
+            '/api/billing/123123123123',
+            follow=True)
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_bigger_phone_year_and_no_month(self):
+        response = self.client.put(
+            '/api/billing/123123123123/123',
+            follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_bigger_phone_month(self):
+        response = self.client.put(
+            '/api/billing/123123123123/2018/123',
+            follow=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_bigger_phone_month_with_year_and_month(self):
+        response = self.client.put(
+            '/api/billing/123123123123/2018/08',
+            follow=True)
+        self.assertEqual(response.status_code, 400)
+
+    def test_valid_phone_year_and_month(self):
+        response = self.client.put(
+            '/api/billing/84998182665/2018/08',
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_no_phone_calls_in_month(self):
+        response = self.client.put(
+            '/api/billing/84998182665/2018/05',
+            follow=True)
+        message = "No phone calls in 05 2018"
+        message_response = response.data["Msg"]
+        self.assertEqual(message_response, message)

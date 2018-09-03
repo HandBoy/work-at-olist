@@ -24,7 +24,7 @@ class MonthlyBillingView(APIView):
     Get the phone calls of a month
 
     This method receives, by url, a phone number and optionally a year and
-    a month period to calculate a bill. 
+    a month period to calculate a bill.
     If the year or month parameter is not passed, it assumes the last month
     last month of the same year.
 
@@ -33,14 +33,14 @@ class MonthlyBillingView(APIView):
     - `phone_number`: **int** *required*
         number of who made the phone call
     - `year`: **str** *optional*
-        number for callers
+        account year, required four digits
     - `month`: **str** *optional*
-        number for callers
+        account month, required two digits
 
 
     Return
     -------
-    A dict with phone calls that month or last month 
+    A dict with phone calls that month or last month
     mapping keys to the corresponding
 
 
@@ -83,10 +83,9 @@ class MonthlyBillingView(APIView):
     queryset = Call.objects.all()
 
     def get(self, request, phone_number, year=None, month=None):
-        # First, we need to validate if the phone number received
-        # is valid
+        # Validate if the phone number received is valid
         is_valid_phone = re.compile(r'^\d{10,11}$').match(phone_number)
-        # If it isn't, return a 400 BAD REQUEST response
+
         if not is_valid_phone:
             raise PhoneNumberInvalidAPIError()
 
@@ -94,7 +93,7 @@ class MonthlyBillingView(APIView):
             raise MonthInvalidAPIError()
 
         month, year = get_correct_date(month, year)
-        print(month, year)
+        # Get phone calls if has the number passed by args and has end
         calls = Call.objects.filter(call_start__source=phone_number,
                                     call_end__timestamp__month=month,
                                     call_end__timestamp__year=year)
@@ -108,6 +107,14 @@ class MonthlyBillingView(APIView):
                  'duration': call.format_duration,
                  'price': call.format_price}
             calls_dict.append(a)
+
+        
+        # verifying the number of phone calls in the month
+        if(len(calls_dict) == 0):
+            return Response(data=(
+                                {"Msg": "No phone calls in %s %s"
+                                 % (month, year)}),
+                            status=status.HTTP_200_OK)
 
         serializer = MonthBillSerializer(calls_dict, many=True)
         return Response(serializer.data)
