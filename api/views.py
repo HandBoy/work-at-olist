@@ -220,16 +220,12 @@ class CreateCallViewSet(APIView):
 
 class EndCallViewSet(APIView):
     """
-    Calculate the duration, price and ending a call
+    Calculate the duration annd price when the call is finished
 
     Parameters
     ----------
-    - `call_id`: **int**
+    - `id`: **int** **required**
         Call id to finish phone call
-
-            {
-                "call_id": 91
-            }
 
     Return
     -------
@@ -246,6 +242,7 @@ class EndCallViewSet(APIView):
     - `price`: **str**
         the cost of the phone call
 
+            PUT /api/call/91/end/
             {
                 "destination": "84998182665",
                 "date": "2018-09-01",
@@ -257,19 +254,17 @@ class EndCallViewSet(APIView):
     Raises
     ------
     **Id Call Not Found**:
-        HTTP 404 Not Found.
-        Not found. Phone call not found in database.
+        HTTP 400 Bad Request.
+        Phone call not found in database.
     """
     queryset = Call.objects.all()
 
-    def put(self, request):
+    def put(self, request, id):
         try:
-            call_id = request.data['call_id']
-        except KeyError as err:
-            return Response(data='{"Error": "require field call_id"}',
+            call = Call.objects.get(pk=id)
+        except Call.DoesNotExist:
+            return Response(data='{"Detail": "Call Id Not Found"}',
                             status=status.HTTP_400_BAD_REQUEST)
-
-        call = get_object_or_404(self.queryset, pk=call_id)
 
         end_call = CallEnd(call_id=call)
         end_call.save()
