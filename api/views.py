@@ -43,7 +43,6 @@ class MonthlyBillingView(APIView):
     A dict with phone calls that month or last month
     mapping keys to the corresponding
 
-
     - `destination`: **str**
         number for callers
     - `date`: **str**
@@ -55,7 +54,7 @@ class MonthlyBillingView(APIView):
     - `price`: **str**
         the cost of the phone call
 
-            GET /api/billing/84998182665/2018/07/
+            GET /api/bills/84998182665/?year=2018&month=06
             [
                 {
                     "destination": "84996463254",
@@ -82,9 +81,11 @@ class MonthlyBillingView(APIView):
     """
     queryset = Call.objects.all()
 
-    def get(self, request, phone_number, year=None, month=None):
+    def get(self, request, phone_number):
         # Validate if the phone number received is valid
         is_valid_phone = re.compile(r'^\d{10,11}$').match(phone_number)
+        month = request.GET.get('month', None)
+        year = request.GET.get('year', None)
 
         if not is_valid_phone:
             raise PhoneNumberInvalidAPIError()
@@ -108,7 +109,7 @@ class MonthlyBillingView(APIView):
                  'price': call.format_price}
             calls_dict.append(a)
 
-        
+
         # verifying the number of phone calls in the month
         if(len(calls_dict) == 0):
             return Response(data=(
@@ -182,9 +183,13 @@ class CreateCallViewSet(APIView):
         HTTP 400 Bad Request.
         source and destination are required
 
-    **source equals destination.**
+    **Source equals Destination.**
         HTTP 400 Bad Request.
         annot create a call where source is equals as the destination.
+
+    **Phone numbers Invalid**
+        Phone numbers must be all digits, with 2 area code digits 
+        and 8 or 9 phone number digits.
     """
     queryset = CallStart.objects.all()
     serializer_class = CallStartSerializer
