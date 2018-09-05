@@ -13,7 +13,7 @@ from .serializers import (
                          CallSerializer, CallStartSerializer,
                          MonthBillSerializer, CallAfterStartSerializer)
 
-from .utils import calculate_price, get_correct_date
+from api.datetime_utils import get_previous_month
 
 from api.calc_price import CalcPrice
 
@@ -94,7 +94,8 @@ class MonthlyBillingView(APIView):
         if(month is not None and (int(month) <= 1 or int(month) >= 12)):
             raise MonthInvalidAPIError()
 
-        month, year = get_correct_date(month, year)
+        month, year = get_previous_month(month, year)
+
         # Get phone calls if has the number passed by args and has end
         calls = Call.objects.filter(call_start__source=phone_number,
                                     call_end__timestamp__month=month,
@@ -273,8 +274,7 @@ class EndCallViewSet(APIView):
                                end_call.timestamp,
                                call.charge)
 
-        call.price = calc_price.calculate_price(call_start.timestamp,
-                                                end_call.timestamp)
+        call.price = calc_price.calculate_price()
         call.save()
         serializer = MonthBillSerializer({
                 'destination': call_start.destination,
