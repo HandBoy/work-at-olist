@@ -54,7 +54,8 @@ class Call(models.Model):
     charge = models.ForeignKey(
         Charge,
         on_delete=models.CASCADE,
-        related_name='charge')
+        related_name='charge',
+        default=1)
 
     def format_duration(self):
         """
@@ -159,4 +160,3 @@ class CallEnd(models.Model):
         Call,
         on_delete=models.CASCADE,
         related_name='call_end')
-
