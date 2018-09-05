@@ -10,3 +10,4 @@ tmp
 __init__.py
 migrations
 settings.json
+static/*
