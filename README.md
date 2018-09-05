@@ -45,13 +45,13 @@ From the route of the repository:
 
 
 ## Viewing DRF Docs
-Once you install and run the project go to [http://0.0.0.0:8000/docs/](http://0.0.0.0:8000/docs/).
+Once you install and run the project go to [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/).
 
 
 ## Deployed instance
 The project was deployed on Heroku.
-- Application: https://sheltered-stream-75763.herokuapp.com/
-- API Documentation: https://sheltered-stream-75763.herokuapp.com/docs/
+- Application: https://phonebillsolist.herokuapp.com/api/
+- API Documentation: https://phonebillsolist.herokuapp.com/docs/
 
 ## Tests
 
