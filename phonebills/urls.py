@@ -17,6 +17,8 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
 
+from calls.views import index
+
 from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
@@ -25,5 +27,6 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^docs/', include_docs_urls(
         title='Phone Bills API',
-        description="API Endpoints Documentation"))
+        description="API Endpoints Documentation")),
+    url(r'^$', view=index, name='index'),
 ]
