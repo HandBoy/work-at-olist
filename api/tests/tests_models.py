@@ -1,8 +1,7 @@
 from django.test import TestCase
-from django.utils import timezone
 from django.core.exceptions import ValidationError
-from calls.models import (CallStart, CallEnd, Call, Charge)
-from datetime import datetime, date, time
+from calls.models import (CallStart, Call, Charge)
+from datetime import time
 
 
 class CallStartTests(TestCase):

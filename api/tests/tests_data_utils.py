@@ -26,7 +26,8 @@ class TesteGetCorrectDate(TestCase):
     def test_actual_month_next_year(self):
         month = datetime.now().month
         year = datetime.now().year+1
-        self.assertListEqual(get_previous_month(month, year), [month-1, year-1])
+        self.assertListEqual(get_previous_month(month, year), 
+                             [month-1, year-1])
 
     def test_actual_month_last_year(self):
         month = datetime.now().month
@@ -41,7 +42,8 @@ class TesteGetCorrectDate(TestCase):
     def test_next_month_next_year(self):
         month = datetime.now().month+1
         year = datetime.now().year+1
-        self.assertListEqual(get_previous_month(month, year), [month-2, year-1])
+        self.assertListEqual(get_previous_month(month, year), 
+                             [month-2, year-1])
 
     def test_next_month_last_year(self):
         month = datetime.now().month+1

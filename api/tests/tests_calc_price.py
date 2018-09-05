@@ -9,8 +9,6 @@ from api.calc_price import CalcPrice
 
 # Create your tests here.
 
-#TODO use verbose names in defs
-
 
 class CalculatePriceTest(TestCase):
     def setUp(self):
@@ -61,7 +59,6 @@ class CalculatePriceTest(TestCase):
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 89.46)
 
-    # 4
     def test_start_lt_start_standard_end_gt_start_standard(self):
         start_call = datetime(2018, 6, 18, 4, 43, 58, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 18, 7, 17, 58, tzinfo=pytz.utc)
@@ -74,7 +71,6 @@ class CalculatePriceTest(TestCase):
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 93.69)
 
-    # 6
     def test_start_lt_start_standard_end_gt_end_standard(self):
         start_call = datetime(2018, 6, 18, 5, 23, 58, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 18, 23, 42, 58, tzinfo=pytz.utc)
@@ -87,7 +83,6 @@ class CalculatePriceTest(TestCase):
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 173.16)
 
-    #5
     def test_start_and_end_gt_start_and_end_standart(self): 
         start_call = datetime(2018, 6, 18, 20, 43, 58, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 18, 23, 13, 43, tzinfo=pytz.utc)
@@ -99,7 +94,7 @@ class CalculatePriceTest(TestCase):
         end_call = datetime(2018, 6, 19, 23, 13, 43, tzinfo=pytz.utc)
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 93.6)
-    #2
+
     def test_start_lt_start_standard_end_lt_start_standard(self):
         start_call = datetime(2018, 6, 18, 3, 43, 58, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 18, 5, 33, 58, tzinfo=pytz.utc)
@@ -111,7 +106,7 @@ class CalculatePriceTest(TestCase):
         end_call = datetime(2018, 6, 19, 5, 33, 58, tzinfo=pytz.utc)
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 86.76)
-    #3
+
     def test_test_reduced_tariff_after_standard(self):
         start_call = datetime(2018, 6, 18, 22, 43, 58, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 18, 23, 5, 43, tzinfo=pytz.utc)
@@ -124,20 +119,20 @@ class CalculatePriceTest(TestCase):
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 86.76)
 
-    # # Start of phone call > Fnish of phone call
-    
+    # Start of phone call > Fnish of phone call
+
     def test_start_gt_end_standard_end_gt_start_standard(self):
         start_call = datetime(2018, 6, 18, 23, 0, 0, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 19, 8, 0, 0, tzinfo=pytz.utc)
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 11.16)
-    
+
     def test_start_gt_end_standard_end_gt_start_standard_next_day(self):
         start_call = datetime(2018, 6, 18, 23, 0, 0, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 20, 8, 0, 0, tzinfo=pytz.utc)
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 97.56)
-    
+
     def test_on_intervals_within_the_standard(self):
         start_call = datetime(2018, 6, 18, 20, 0, 0, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 19, 8, 0, 0, tzinfo=pytz.utc)
@@ -149,7 +144,7 @@ class CalculatePriceTest(TestCase):
         end_call = datetime(2018, 6, 20, 8, 0, 0, tzinfo=pytz.utc)
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 108.36)
-    
+
     def test_one_intervals_within_the_standard(self):
         start_call = datetime(2018, 6, 18, 20, 0, 0, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 19, 5, 0, 0, tzinfo=pytz.utc)
