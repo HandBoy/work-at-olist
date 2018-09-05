@@ -29,6 +29,21 @@ phone_validator_regex = RegexValidator(
 )
 
 
+class Charge(models.Model):
+    """
+    Class to save a a charge  phone
+    """
+    name = models.CharField(max_length=100)
+    standard_time_start = models.TimeField()
+    standard_time_end = models.TimeField()
+    standing_time_charge = models.FloatField()
+    standing_time_minute = models.FloatField()
+    reduced_time_start = models.TimeField()
+    reduced_time_end = models.TimeField()
+    reduced_time_charge = models.FloatField()
+    reduced_time_minute = models.FloatField()
+
+
 class Call(models.Model):
     """
     Class to save a duration and price of a call
@@ -36,6 +51,10 @@ class Call(models.Model):
     """
     duration = models.DurationField(blank=True, null=True)
     price = models.FloatField(blank=True, default=0)
+    charge = models.ForeignKey(
+        Charge,
+        on_delete=models.CASCADE,
+        related_name='charge')
 
     def format_duration(self):
         """
@@ -141,18 +160,3 @@ class CallEnd(models.Model):
         on_delete=models.CASCADE,
         related_name='call_end')
 
-
-class RatePlans(models.Model):
-    """
-    Class to save a duration and price of a call
-    Its is the link (one to one) between classes StartCall and EndCall
-    """
-    name = models.CharField(max_length=100)
-    standard_time_start = models.TimeField()
-    standard_time_end = models.TimeField()
-    standing_time_charge = models.FloatField()
-    standing_time_minute = models.FloatField()
-    reduced_time_start = models.TimeField()
-    reduced_time_end = models.TimeField()
-    reduced_time_charge = models.FloatField()
-    reduced_time_minute = models.FloatField()
