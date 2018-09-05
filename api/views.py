@@ -1,7 +1,6 @@
 import re
 
 from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
@@ -15,6 +14,8 @@ from .serializers import (
                          MonthBillSerializer, CallAfterStartSerializer)
 
 from .utils import calculate_price, get_correct_date
+
+from api.calc_price import CalcPrice
 
 # Create your views here.
 
@@ -99,6 +100,11 @@ class MonthlyBillingView(APIView):
                                     call_end__timestamp__month=month,
                                     call_end__timestamp__year=year)
 
+        if(calls.count() == 0):
+            return Response(data=(
+                                {"Msg": "No phone calls in %s %s"
+                                 % (month, year)}),
+                            status=status.HTTP_200_OK)
         calls_dict = []
 
         for call in calls:
@@ -108,14 +114,6 @@ class MonthlyBillingView(APIView):
                  'duration': call.format_duration,
                  'price': call.format_price}
             calls_dict.append(a)
-
-
-        # verifying the number of phone calls in the month
-        if(len(calls_dict) == 0):
-            return Response(data=(
-                                {"Msg": "No phone calls in %s %s"
-                                 % (month, year)}),
-                            status=status.HTTP_200_OK)
 
         serializer = MonthBillSerializer(calls_dict, many=True)
         return Response(serializer.data)
@@ -188,7 +186,7 @@ class CreateCallViewSet(APIView):
         annot create a call where source is equals as the destination.
 
     **Phone numbers Invalid**
-        Phone numbers must be all digits, with 2 area code digits 
+        Phone numbers must be all digits, with 2 area code digits
         and 8 or 9 phone number digits.
     """
     queryset = CallStart.objects.all()
@@ -270,7 +268,13 @@ class EndCallViewSet(APIView):
         end_call.save()
         call_start = CallStart.objects.get(call_id=call)
         call.duration = end_call.timestamp - call_start.timestamp
-        call.price = calculate_price(call_start.timestamp, end_call.timestamp)
+
+        calc_price = CalcPrice(call_start.timestamp,
+                               end_call.timestamp,
+                               call.charge)
+
+        call.price = calc_price.calculate_price(call_start.timestamp,
+                                                end_call.timestamp)
         call.save()
         serializer = MonthBillSerializer({
                 'destination': call_start.destination,
