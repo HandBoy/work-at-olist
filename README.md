@@ -1,72 +1,59 @@
-## Setting up the project
-A demo project to get you started with DRF docs development.
-
-
-### Installation
-From the route of the repository:
-
-    # Create the virtual environment
-    pyvenv env
-
-    # Install requirements
-    env/bin/pip install -r requirements.txt
-
-    # Activate the environment
-    source env/bin/activate
-
-    # Cd Into the demo
-    cd demo/
-
-    # Install Django Rest Framework Docs
-    pip install -e ../
-
-    # Run the project
-    python manage.py runserver
-
-**Note**: You **do not** need a database or to run `migrate`.
-
-
-### Viewing DRF Docs
-Once you install and run the project go to [http://0.0.0.0:8000/docs/](http://0.0.0.0:8000/docs/).
-
-
-### Note
-The demo project has no functionality at all. Its purpose is **only** for viewing the docs and developing DRF docs further.
-
-
-https://docs.python-guide.org/writing/documentation/
-https://stackoverflow.com/questions/3898572/what-is-the-standard-python-docstring-format
-https://realpython.com/testing-in-django-part-1-best-practices-and-examples/
-
 # Work at Olist - Test Implementation
-
-This fork is a test resolution for a job application at [Olist](https://olist.com/) as Python Web Developer.
 
 The project is an API responsible for:
 - Register phone starts and ends calls
 - Generate monthly bill
+
+## Description
+A REST API that receives call records and generate monthly bills for a given telephone number.
+This fork is a test resolution for a job application at [Olist](https://olist.com/) as Python Web Developer.
+
+## Installation
+From the route of the repository:
+    # Install virtual environment
+    sudo pip install virtualenv
+
+    # Create the virtual environment
+    virtualenv <folder_env_name>
+
+    # discover python3 path 
+    which python3
+    /usr/bin/python3
+
+    # Seting python3 in virtualenv 
+    virtualenv --python='/usr/bin/python3' <folder_env_name>
+
+    # Activate the environment
+    source source <folder_env_name>/bin/activate
+
+    # Install requirements
+    env/bin/pip install -r requirements.txt
+
+    # Clone repository
+    git clone https://github.com/HandBoy/work-at-olist.git
+
+    # Install Project Requirements
+    pip install -r requirements.txt
+
+    # Creating a superuser
+    python manage.py createsuperuser
+
+    # Run the project
+    python manage.py runserver 127.0.0.1:8000
+
+**Note**: You **do not** need a database or to run `migrate`.
+
+
+## Viewing DRF Docs
+Once you install and run the project go to [http://0.0.0.0:8000/docs/](http://0.0.0.0:8000/docs/).
+
 
 ## Deployed instance
 The project was deployed on Heroku.
 - Application: https://sheltered-stream-75763.herokuapp.com/
 - API Documentation: https://sheltered-stream-75763.herokuapp.com/docs/
 
-## Instructions
-To make project work, follow the steps:
-1. Clone or download the repo.
-2. Install dependencies from requirements.txt
-   ```
-   pip install -r requirements.txt
-   ```
-3. Create a PostgreSQL database and user, then configure in [settings.py file](work_at_olist/settings.py)
-4. Run migrations:
-   ```
-   python manage.py migrate
-   ```
-5. Run:
-   ```
-   python manage.py runserver
-   ```
+## Tests
 
 Tests can be executed using the Django built-in test tool:
 ```

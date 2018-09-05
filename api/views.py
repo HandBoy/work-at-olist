@@ -2,7 +2,7 @@ import re
 
 from django.core.exceptions import ValidationError
 
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,8 +10,9 @@ from calls.models import Call, CallEnd, CallStart
 
 from .exceptions import MonthInvalidAPIError, PhoneNumberInvalidAPIError
 from .serializers import (
-                         CallSerializer, CallStartSerializer,
-                         MonthBillSerializer, CallAfterStartSerializer)
+                         CallStartSerializer,
+                         MonthBillSerializer, 
+                         CallAfterStartSerializer)
 
 from api.datetime_utils import get_previous_month
 
@@ -120,23 +121,6 @@ class MonthlyBillingView(APIView):
         return Response(serializer.data)
 
 
-class CalculateCallViewSet(viewsets.ModelViewSet):
-    queryset = Call.objects.all()
-    serializer_class = CallSerializer
-
-    def retrieve(self, request, pk=None):
-        call = Call.objects.get(id=pk)
-        call_start = CallStart.objects.get(call_id=pk)
-        call_end = CallEnd.objects.get(call_id=pk)
-
-        call.duration = call_end.timestamp - call_start.timestamp
-        call.price = calculate_price(call_start.timestamp, call_end.timestamp)
-        call.save()
-
-        serializer = CallSerializer(call)
-        return Response(serializer.data)
-
-
 class CreateCallViewSet(APIView):
     """
     Create a phone call
@@ -150,7 +134,7 @@ class CreateCallViewSet(APIView):
 
             {
                 "source": "84998182665",
-                "destination": "8499818230"
+                "destination": "84998182304"
             }
 
     Return
