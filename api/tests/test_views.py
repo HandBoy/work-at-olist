@@ -4,11 +4,26 @@ from django.test import TestCase
 
 from calls.models import Charge
 
+from django.contrib.auth.models import User
+
+from rest_framework.authtoken.models import Token
 
 # Create your tests here.
 
 
 class CreateCallViewSetTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.credentials = {
+            'username': 'testuser',
+            'password': 's3cr3tp@ss',
+            'email': 'teste@email.com',
+            'is_superuser': 1}
+        cls.user = User.objects.create_user(**cls.credentials)
+
+        cls.token = Token.objects.create(user=cls.user)
+
     def test_not_allowed_get_method(self):
         response = self.client.get(
             '/api/call/start/',
@@ -19,6 +34,7 @@ class CreateCallViewSetTest(TestCase):
         response = self.client.put(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             follow=True)
         self.assertEqual(response.status_code, 405)
 
@@ -26,62 +42,99 @@ class CreateCallViewSetTest(TestCase):
         response = self.client.delete(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             follow=True)
         self.assertEqual(response.status_code, 405)
 
     def test_send_invalid_data_empty(self):
+        invalid_data = '{}'
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_send_invalid_data_only_source(self):
+        invalid_data = '{"source": "84998182665"}'
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_send_invalid_data_fields_unknown(self):
+        invalid_data = ('{"fieldErr": "84998182665",'
+                        + '"fieldErr": "8499818230"}')
+
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_phone_number_both_bigger(self):
+        invalid_data = ('{'
+                        + '"source": "84998182665222",'
+                        + '"destination": "8499818230222" }')
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_phone_number_both_little(self):
+        invalid_data = ('{'
+                        + '"source": "8499818",'
+                        + '"destination": "8499818" }')
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_phone_number_source_little_destination_bigger(self):
+        invalid_data = ('{'
+                        + '"source": "8499818",'
+                        + '"destination": "8499818230222" }')
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_phone_number_source_bigger_destination_little(self):
+        invalid_data = ('{'
+                        + '"source": "8499818230222",'
+                        + '"destination": "8499818" }')
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_phone_number_iguals_source_and_destination(self):
+        invalid_data = ('{'
+                        + '"source": "84998182665",'
+                        + '"destination": "84998182665" }')
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -92,6 +145,7 @@ class CreateCallViewSetTest(TestCase):
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             data=valid_data,
             follow=True)
         self.assertEqual(response.status_code, 201)
@@ -100,6 +154,15 @@ class CreateCallViewSetTest(TestCase):
 class EndCallViewSet(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.credentials = {
+            'username': 'testuser',
+            'password': 's3cr3tp@ss',
+            'email': 'teste@email.com',
+            'is_superuser': 1}
+        cls.user = User.objects.create_user(**cls.credentials)
+
+        cls.token = Token.objects.create(user=cls.user)
+
         Charge.objects.get_or_create(
             name='Standard time call',
             standard_time_start=time(6, 0, 0),
@@ -115,6 +178,7 @@ class EndCallViewSet(TestCase):
     def test_not_allowed_get_method(self):
         response = self.client.get(
             '/api/call/0/end/',
+
             follow=True)
         self.assertEqual(response.status_code, 405)
 
@@ -122,6 +186,7 @@ class EndCallViewSet(TestCase):
         response = self.client.post(
             '/api/call/0/end/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             follow=True)
         self.assertEqual(response.status_code, 405)
 
@@ -129,6 +194,7 @@ class EndCallViewSet(TestCase):
         response = self.client.delete(
             '/api/call/0/end/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             follow=True)
         self.assertEqual(response.status_code, 405)
 
@@ -140,11 +206,10 @@ class EndCallViewSet(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_send_invalid_field_and_id(self):
-        invalid_data = '{"id": 999999}'
         response = self.client.put(
             '/api/call/999999/end/',
             content_type='application/json',
-            data=invalid_data,
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -155,9 +220,9 @@ class EndCallViewSet(TestCase):
         response = self.client.post(
             '/api/call/start/',
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             data=valid_data,
             follow=True)
-
         call_id = response.data['call_id']
 
         valid_data = ("{\"call_id\": %d }" % call_id)
@@ -165,6 +230,7 @@ class EndCallViewSet(TestCase):
         response = self.client.put(
             ("/api/call/%s/end/" % (call_id)),
             content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
             data=valid_data,
             follow=True)
         self.assertEqual(response.status_code, 201)
