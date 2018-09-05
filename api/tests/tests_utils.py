@@ -3,7 +3,7 @@ from datetime import datetime, time
 import pytz
 from django.test import TestCase
 
-from calls.models import RatePlans
+from calls.models import Charge
 
 from api.utils import calculate_price, get_correct_date
 
@@ -11,9 +11,9 @@ from api.exceptions import MonthInvalidAPIError
 
 # Create your tests here.
 
-
+#TODO use verbose names in defs
 class TesteGetCorrectDate(TestCase):
-    def test_none_month(self):
+    def test_when_month_is_none(self):
         month = datetime.now().month-1
         year = datetime.now().year
         self.assertListEqual(get_correct_date(None, year), [month, year])
@@ -67,10 +67,9 @@ class TesteGetCorrectDate(TestCase):
             get_correct_date(2018)
 
 
-class TesteGetCalculatePrice(TestCase):
-
-    def setUp(self):        
-        RatePlans.objects.get_or_create(
+class CalculatePriceTest(TestCase):
+    def setUp(self):
+        Charge.objects.get_or_create(
             name='Standard time call',
             standard_time_start=time(6, 0, 0),
             standard_time_end=time(22, 0, 0),
@@ -85,7 +84,7 @@ class TesteGetCalculatePrice(TestCase):
     # Start < Fnish
     # 1
 
-    def test_tariff_standard_end_same_day(self):
+    def test_when_tariff_standard_end_same_day(self):
         start_call = datetime(2018, 6, 18, 10, 43, 58)
         end_call = datetime(2018, 6, 18, 11, 13, 58)
         self.assertEqual(calculate_price(start_call, end_call), 3.06)

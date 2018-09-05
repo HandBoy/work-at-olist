@@ -2,7 +2,7 @@ from datetime import time
 
 from django.test import TestCase
 
-from calls.models import RatePlans
+from calls.models import Charge
 
 
 # Create your tests here.
@@ -11,20 +11,20 @@ from calls.models import RatePlans
 class TesteCreateCallViewSet(TestCase):
     def test_not_allowed_get_method(self):
         response = self.client.get(
-            '/api/startcall/',
+            '/api/call/start/',
             follow=True)
         self.assertEqual(response.status_code, 405)
 
     def test_not_allowed_put_method(self):
         response = self.client.put(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
             follow=True)
         self.assertEqual(response.status_code, 405)
 
     def test_not_allowed_delete_method(self):
         response = self.client.delete(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
             follow=True)
         self.assertEqual(response.status_code, 405)
@@ -32,18 +32,16 @@ class TesteCreateCallViewSet(TestCase):
     def test_send_invalid_data_empty(self):
         invalid_data = '{}'
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_send_invalid_data_only_source(self):
         invalid_data = '{"source": "84998182665"}'
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -51,9 +49,8 @@ class TesteCreateCallViewSet(TestCase):
         invalid_data = ('{"fieldErr": "84998182665",'
                         + '"fieldErr": "8499818230"}')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -62,9 +59,8 @@ class TesteCreateCallViewSet(TestCase):
                         + '"source": "84998182665222",'
                         + '"destination": "8499818230222" }')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -73,9 +69,8 @@ class TesteCreateCallViewSet(TestCase):
                         + '"source": "8499818",'
                         + '"destination": "8499818" }')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -84,9 +79,8 @@ class TesteCreateCallViewSet(TestCase):
                         + '"source": "8499818",'
                         + '"destination": "8499818230222" }')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -95,9 +89,8 @@ class TesteCreateCallViewSet(TestCase):
                         + '"source": "84998182665222",'
                         + '"destination": "8499818" }')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -106,9 +99,8 @@ class TesteCreateCallViewSet(TestCase):
                         + '"source": "84998182665",'
                         + '"destination": "84998182665" }')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
         self.assertEqual(response.status_code, 400)
 
@@ -117,7 +109,7 @@ class TesteCreateCallViewSet(TestCase):
                       + '"source": "84998182665",'
                       + '"destination": "84998182635" }')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
             data=valid_data,
             follow=True)
@@ -127,7 +119,7 @@ class TesteCreateCallViewSet(TestCase):
 class EndCallViewSet(TestCase):
     @classmethod
     def setUpTestData(cls):
-        RatePlans.objects.get_or_create(
+        Charge.objects.get_or_create(
             name='Standard time call',
             standard_time_start=time(6, 0, 0),
             standard_time_end=time(22, 0, 0),
@@ -141,37 +133,35 @@ class EndCallViewSet(TestCase):
 
     def test_not_allowed_get_method(self):
         response = self.client.get(
-            '/api/endcall/',
+            '/api/call/0/end/',
             follow=True)
         self.assertEqual(response.status_code, 405)
 
     def test_not_allowed_post_method(self):
         response = self.client.post(
-            '/api/endcall/',
+            '/api/call/0/end/',
             content_type='application/json',
             follow=True)
         self.assertEqual(response.status_code, 405)
 
     def test_not_allowed_delete_method(self):
         response = self.client.delete(
-            '/api/endcall/',
+            '/api/call/0/end/',
             content_type='application/json',
             follow=True)
         self.assertEqual(response.status_code, 405)
 
     def test_send_invalid_data_empty(self):
-        invalid_data = '{}'
         response = self.client.put(
-            '/api/endcall/',
+            '/api/call/end/',
             content_type='application/json',
-            data=invalid_data,
             follow=True)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     def test_send_invalid_field_and_id(self):
         invalid_data = '{"id": 999999}'
         response = self.client.put(
-            '/api/endcall/',
+            '/api/call/999999/end/',
             content_type='application/json',
             data=invalid_data,
             follow=True)
@@ -182,7 +172,7 @@ class EndCallViewSet(TestCase):
                       + '"source": "84998182665",'
                       + '"destination": "84998182635" }')
         response = self.client.post(
-            '/api/startcall/',
+            '/api/call/start/',
             content_type='application/json',
             data=valid_data,
             follow=True)
@@ -192,7 +182,7 @@ class EndCallViewSet(TestCase):
         valid_data = ("{\"call_id\": %d }" % call_id)
 
         response = self.client.put(
-            '/api/endcall/',
+            ("/api/call/%s/end/" % (call_id)),
             content_type='application/json',
             data=valid_data,
             follow=True)
@@ -201,68 +191,68 @@ class EndCallViewSet(TestCase):
 
 class MonthlyBilling(TestCase):
     def test_no_phone_year_and_month(self):
-        response = self.client.put(
-            '/api/billing/',
+        response = self.client.get(
+            '/api/bills/',
             follow=True)
         self.assertEqual(response.status_code, 404)
 
     def test_invalid_little_phone_and_no_year_and_month(self):
-        response = self.client.put(
-            '/api/billing/123',
+        response = self.client.get(
+            '/api/bills/123',
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_little_phone_and_year_and_no_month(self):
-        response = self.client.put(
-            '/api/billing/123/123',
+        response = self.client.get(
+            '/api/bills/123/123',
             follow=True)
         self.assertEqual(response.status_code, 404)
 
     def test_invalid_little_phone_month(self):
-        response = self.client.put(
-            '/api/billing/123/2018/123',
+        response = self.client.get(
+            '/api/bills/123/&year=2018&month=123',
             follow=True)
         self.assertEqual(response.status_code, 404)
 
     def test_invalid_little_phone_month_with_year_and_month(self):
-        response = self.client.put(
-            '/api/billing/123/2018/08',
+        response = self.client.get(
+            '/api/bills/123/?year=2018&month=08',
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_bigger_phone_and_no_year_and_month(self):
-        response = self.client.put(
-            '/api/billing/123123123123',
+        response = self.client.get(
+            '/api/bills/123123123123',
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_bigger_phone_year_and_no_month(self):
-        response = self.client.put(
-            '/api/billing/123123123123/123',
+        response = self.client.get(
+            '/api/bills/123123123123/?year=123',
             follow=True)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     def test_invalid_bigger_phone_month(self):
-        response = self.client.put(
-            '/api/billing/123123123123/2018/123',
+        response = self.client.get(
+            '/api/bills/123123123123/?year=2018&month=123',
             follow=True)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     def test_invalid_bigger_phone_month_with_year_and_month(self):
-        response = self.client.put(
-            '/api/billing/123123123123/2018/08',
+        response = self.client.get(
+            '/api/bills/123123123123/?year=2018&month=08',
             follow=True)
         self.assertEqual(response.status_code, 400)
 
     def test_valid_phone_year_and_month(self):
-        response = self.client.put(
-            '/api/billing/84998182665/2018/08',
+        response = self.client.get(
+            '/api/bills/84998182665/?year=2018&month=08',
             follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_no_phone_calls_in_month(self):
-        response = self.client.put(
-            '/api/billing/84998182665/2018/05',
+        response = self.client.get(
+            '/api/bills/84998182635/?year=2018&month=05',
             follow=True)
         message = "No phone calls in 05 2018"
         message_response = response.data["Msg"]
