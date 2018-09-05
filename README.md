@@ -1,3 +1,89 @@
+## Setting up the project
+A demo project to get you started with DRF docs development.
+
+
+### Installation
+From the route of the repository:
+
+    # Create the virtual environment
+    pyvenv env
+
+    # Install requirements
+    env/bin/pip install -r requirements.txt
+
+    # Activate the environment
+    source env/bin/activate
+
+    # Cd Into the demo
+    cd demo/
+
+    # Install Django Rest Framework Docs
+    pip install -e ../
+
+    # Run the project
+    python manage.py runserver
+
+**Note**: You **do not** need a database or to run `migrate`.
+
+
+### Viewing DRF Docs
+Once you install and run the project go to [http://0.0.0.0:8000/docs/](http://0.0.0.0:8000/docs/).
+
+
+### Note
+The demo project has no functionality at all. Its purpose is **only** for viewing the docs and developing DRF docs further.
+
+
+https://docs.python-guide.org/writing/documentation/
+https://stackoverflow.com/questions/3898572/what-is-the-standard-python-docstring-format
+https://realpython.com/testing-in-django-part-1-best-practices-and-examples/
+
+# Work at Olist - Test Implementation
+
+This fork is a test resolution for a job application at [Olist](https://olist.com/) as Python Web Developer.
+
+The project is an API responsible for:
+- Register phone starts and ends calls
+- Generate monthly bill
+
+## Deployed instance
+The project was deployed on Heroku.
+- Application: https://sheltered-stream-75763.herokuapp.com/
+- API Documentation: https://sheltered-stream-75763.herokuapp.com/docs/
+
+## Instructions
+To make project work, follow the steps:
+1. Clone or download the repo.
+2. Install dependencies from requirements.txt
+   ```
+   pip install -r requirements.txt
+   ```
+3. Create a PostgreSQL database and user, then configure in [settings.py file](work_at_olist/settings.py)
+4. Run migrations:
+   ```
+   python manage.py migrate
+   ```
+5. Run:
+   ```
+   python manage.py runserver
+   ```
+
+Tests can be executed using the Django built-in test tool:
+```
+python manage.py test api/tests/
+```
+
+## Used environment
+
+The following environment was used to develop the project:
+- Desktop: AMD A4-3310MX APU with Radeon(tm) HD Graphics × 2, 7,3 GB DDR2
+- Ubuntu 16.04
+- Visual Studio Code
+- Python 3.5
+- Django 2.0.7
+- Django Rest Framework 3.8.2
+
+
 # Work at Olist
 
 [Olist](https://olist.com/) is a company that offers an integration platform
