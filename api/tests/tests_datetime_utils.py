@@ -7,7 +7,7 @@ from api.datetime_utils import get_previous_month
 from api.exceptions import MonthInvalidAPIError
 
 
-class TesteGetCorrectDate(TestCase):
+class PreviousMonthTest(TestCase):
     def test_when_month_is_none(self):
         month = datetime.now().month-1
         year = datetime.now().year
@@ -42,7 +42,7 @@ class TesteGetCorrectDate(TestCase):
     def test_next_month_next_year(self):
         month = datetime.now().month+1
         year = datetime.now().year+1
-        self.assertListEqual(get_previous_month(month, year), 
+        self.assertListEqual(get_previous_month(month, year),
                              [month-2, year-1])
 
     def test_next_month_last_year(self):

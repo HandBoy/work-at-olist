@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .exceptions import MonthInvalidAPIError
 
@@ -70,23 +70,23 @@ def get_previous_month(month=None, year=None):
             get_correct_date() return [7, 2018]
     """
 
+    date_now = datetime.now().date()
     if (month is None):
-        month = datetime.now().month - 1
+        month = date_now.month - 1
 
     if (year is None):
-        year = datetime.now().year
+        year = date_now.year
 
     if ((int(month) < 1) or (int(month) > 12)):
         raise MonthInvalidAPIError()
 
-    createdate = datetime(int(year), int(month), datetime.now().day, 0, 0, 0)
-    #see reformulate if funciton existents
-    if(createdate.date() >= datetime.now().date()):
-        month = datetime.now().month - 1
-        year = datetime.now().year
-        # if current month is the first month of the year
-        if month <= 0:
-            month = 12
-            year = createdate.year - 1
+    one_month_ago = datetime(int(year), int(month), datetime.now().day, 0, 0, 0)
 
-    return [month, year]
+    if(one_month_ago.date() >= date_now):
+        one_month_ago = date_now.replace(day=1)
+        one_month_ago -= timedelta(days=1)
+
+        if (one_month_ago.year > date_now.year):
+            one_month_ago = one_month_ago.replace(year=date_now.year)
+
+    return [one_month_ago.month, one_month_ago.year]
