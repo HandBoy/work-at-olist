@@ -61,13 +61,21 @@ def get_previous_month(month=None, year=None):
 
     Return
     ----------
-    List with month and year adjusted
-            actual month: 8/2018
-            get_correct_date(8,2018) return [7, 2018]
-            get_correct_date(8,2019) return [7, 2018]
-            get_correct_date(7,2018) return [7, 2018]
-            get_correct_date(2018) return [7, 2018]
-            get_correct_date() return [7, 2018]
+        actual month: 8/2018
+        >>> get_correct_date(8,2018)
+        [7, 2018]
+
+        >>> get_correct_date(8,2019)
+        [7, 2018]
+
+        >>> get_correct_date(7,2018)
+        [7, 2018]
+
+        >>> get_correct_date(2018)
+        [7, 2018]
+
+        >>> get_correct_date()
+        [7, 2018]
     """
 
     date_now = datetime.now().date()
