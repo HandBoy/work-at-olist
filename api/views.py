@@ -11,7 +11,7 @@ from calls.models import Call, CallEnd, CallStart
 from .exceptions import MonthInvalidAPIError, PhoneNumberInvalidAPIError
 from .serializers import (
                          CallStartSerializer,
-                         MonthBillSerializer, 
+                         MonthBillSerializer,
                          CallAfterStartSerializer)
 
 from api.datetime_utils import get_previous_month
@@ -247,6 +247,10 @@ class EndCallViewSet(APIView):
             call = Call.objects.get(pk=id)
         except Call.DoesNotExist:
             return Response(data='{"Detail": "Call Id Not Found"}',
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if (CallEnd.objects.filter(call_id=call).count() != 0):
+            return Response(data='{"Detail": "Phone call already completed"}',
                             status=status.HTTP_400_BAD_REQUEST)
 
         end_call = CallEnd(call_id=call)

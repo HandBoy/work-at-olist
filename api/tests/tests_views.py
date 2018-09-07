@@ -213,6 +213,31 @@ class EndCallViewSet(TestCase):
             follow=True)
         self.assertEqual(response.status_code, 400)
 
+    def test_end_call_twice(self):
+        valid_data = ('{'
+                      + '"source": "84998182665",'
+                      + '"destination": "84998182635" }')
+        response = self.client.post(
+            '/api/call/start/',
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            data=valid_data,
+            follow=True)
+        call_id = response.data['call_id']
+
+        self.client.put(
+            ("/api/call/%s/end/" % (call_id)),
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            follow=True)
+        
+        response = self.client.put(
+            ("/api/call/%s/end/" % (call_id)),
+            content_type='application/json',
+            HTTP_AUTHORIZATION="Token %s" % self.token,
+            follow=True)
+        self.assertEqual(response.status_code, 400)
+
     def test_send_valid_id(self):
         valid_data = ('{'
                       + '"source": "84998182665",'
@@ -233,6 +258,7 @@ class EndCallViewSet(TestCase):
             HTTP_AUTHORIZATION="Token %s" % self.token,
             data=valid_data,
             follow=True)
+        print(response.data)
         self.assertEqual(response.status_code, 201)
 
 
@@ -301,6 +327,6 @@ class MonthlyBilling(TestCase):
         response = self.client.get(
             '/api/bills/84998182635/?year=2018&month=05',
             follow=True)
-        message = "No phone calls in 05 2018"
+        message = "No phone calls in 5 2018"
         message_response = response.data["Msg"]
         self.assertEqual(message_response, message)
