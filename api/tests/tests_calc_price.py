@@ -83,7 +83,7 @@ class CalculatePriceTest(TestCase):
         calc = CalcPrice(start_call, end_call, self.charge)
         self.assertEqual(calc.calculate_price(), 173.16)
 
-    def test_start_and_end_gt_start_and_end_standart(self): 
+    def test_start_and_end_gt_start_and_end_standart(self):
         start_call = datetime(2018, 6, 18, 20, 43, 58, tzinfo=pytz.utc)
         end_call = datetime(2018, 6, 18, 23, 13, 43, tzinfo=pytz.utc)
         calc = CalcPrice(start_call, end_call, self.charge)
