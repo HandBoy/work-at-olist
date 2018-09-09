@@ -60,15 +60,31 @@ Tests can be executed using the Django built-in test tool:
 python manage.py test api/tests/
 ```
 
+Tests each file separately
+```
+python manage.py test api/tests/ --pattern="tests_calc_price.py"
+python manage.py test api/tests/ --pattern="tests_datetime_utils.py"
+python manage.py test api/tests/ --pattern="tests_models.py"
+python manage.py test api/tests/ --pattern="tests_views.py"
+```
+
+Tests coverage
+```
+coverage run --source='.' manage.py test api/tests/
+coverage report
+coverage html
+```
+
 ## Used environment
 
 The following environment was used to develop the project:
-- Desktop: AMD A4-3310MX APU with Radeon(tm) HD Graphics × 2, 7,3 GB DDR2
+- Desktop: AMD A4-3310MX APU with Radeon(tm) HD Graphics × 2, 3.8 GB DDR2
 - Ubuntu 16.04
 - Visual Studio Code
 - Python 3.5
 - Django 2.0.7
 - Django Rest Framework 3.8.2
+- coverage-4.5.1 for covarage tests
 
 
 # Work at Olist
