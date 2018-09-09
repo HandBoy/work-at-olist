@@ -67,7 +67,7 @@ class PreviousMonthTest(TestCase):
 
 
 class TotalMinutesTest(TestCase):
-    def test_sum_(self):
+    def test_sum_minutes(self):
         now = datetime.now()
         then = now.replace(hour=now.hour+1)
         minutes_add = 15

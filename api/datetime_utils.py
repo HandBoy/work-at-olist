@@ -100,15 +100,10 @@ def get_previous_month(month=None, year=None):
     if ((int(month) < 1) or (int(month) > 12)):
         raise MonthInvalidAPIError()
 
-    one_month_ago = datetime(
-                             int(year), int(month), datetime.now().day,
-                             0, 0, 0)
+    one_month_ago = datetime(int(year), int(month), date_now.day, 0, 0, 0)
 
     if(one_month_ago.date() >= date_now):
         one_month_ago = date_now.replace(day=1)
         one_month_ago -= timedelta(days=1)
-
-        if (one_month_ago.year > date_now.year):
-            one_month_ago = one_month_ago.replace(year=date_now.year)
 
     return [one_month_ago.month, one_month_ago.year]
