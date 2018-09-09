@@ -230,7 +230,7 @@ class EndCallViewSet(TestCase):
             content_type='application/json',
             HTTP_AUTHORIZATION="Token %s" % self.token,
             follow=True)
-        
+
         response = self.client.put(
             ("/api/call/%s/end/" % (call_id)),
             content_type='application/json',
@@ -258,7 +258,7 @@ class EndCallViewSet(TestCase):
             HTTP_AUTHORIZATION="Token %s" % self.token,
             data=valid_data,
             follow=True)
-        print(response.data)
+
         self.assertEqual(response.status_code, 201)
 
 
@@ -330,3 +330,9 @@ class MonthlyBilling(TestCase):
         message = "No phone calls in 5 2018"
         message_response = response.data["Msg"]
         self.assertEqual(message_response, message)
+
+    def test_invalid_month(self):
+        response = self.client.get(
+            '/api/bills/84998182665/?year=2018&month=15',
+            follow=True)
+        self.assertEqual(response.status_code, 400)
