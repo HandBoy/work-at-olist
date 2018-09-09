@@ -109,7 +109,8 @@ class CallStart(models.Model):
     def validate_source_and_destination(self):
         '''
         Validates that call records cannot have the same source and
-        destination, or one of these fields and not the other
+        destination, if the fields exist, if their size is adequate
+        or whether they are the same.
         '''
         if self.source is None:
             raise ValidationError(
@@ -124,12 +125,12 @@ class CallStart(models.Model):
                 'Cannot create a call where source'
                 + ' is the same as the destination.')
 
-        elif ((len(self.source) < 9) or (len(self.source) < 11)):
+        if ((len(self.source) < 9) or (len(self.source) > 11)):
             raise ValidationError(
                 'Phone numbers must be all digits, with 2 area code digits'
                 + ' and 8 or 9 phone number digits.')
 
-        elif ((len(self.destination) < 9) or (len(self.destination) < 11)):
+        if ((len(self.destination) < 9) or (len(self.destination) > 11)):
             raise ValidationError(
                 'Phone numbers must be all digits, with 2 area code digits'
                 + ' and 8 or 9 phone number digits.')
