@@ -3,48 +3,60 @@ from datetime import datetime, timedelta
 from .exceptions import MonthInvalidAPIError
 
 
-def total_minutes(duration, minutes_days):
-        '''
-        Transform datetime in minutes and sum with minutes days.
+def total_minutes(duration):
+    '''
+    Transform datetime in minutes and sum with minutes days.
 
-        Args:
-            duration: the datetime to use as a starting point
-            minutes_days: the time in minutes
+    Parameters
+    ----------
+        duration: **datetime**  of a date difference
 
-        Returns:
-            total minute
+    Return
+    ----------
+        total minute
 
-            >>> total_minutes(2018-09-01 00:10:00, '00:15:00')
-            25
-        '''
-        seconds = duration.total_seconds()
-        hours = seconds // 3600
-        minutes = (seconds % 3600) // 60
-        total_minute = (hours*60+(minutes+minutes_days))
+        >>> total_minutes(2018-09-01 00:10:00, '00:15:00')
+        25
+    '''
+    seconds_in_a_minute = 60
+    total_minute = ((duration.total_seconds() // seconds_in_a_minute))
 
-        return total_minute
+    return total_minute
 
 
 def time_difference(time_start, time_end):
     '''
-    Calculate the difference between two times on the same date.
+    Calculate the difference, in minutes, between two times.
 
-    Args:
-        time_start: the time to use as a starting point
-        time_end: the time to use as an end point
+    Parameters
+    ----------
+        time_start: **datetime.time** to use as a starting point
+        time_end: **datetime.time** time to use as an end point
 
-    Returns:
-        the difference between time_start and time_end. For example:
+    Return
+    ----------
+        the difference between time_start and time_end in minutes. For example:
 
         >>> time_difference('15:00:00', '16:00:00')
         60
     '''
 
-    start = datetime.strptime(str(time_start), "%H:%M:%S")
-    end = datetime.strptime(str(time_end), "%H:%M:%S")
+    now = datetime.now()
+    end = now.replace(
+                       hour=time_end.hour,
+                       minute=time_end.minute,
+                       second=time_end.second)
+    start = now.replace(
+                       hour=time_start.hour,
+                       minute=time_start.minute,
+                       second=time_start.second)
+
+    if(end < start):
+        start = start.replace(day=start.day - 1)
+
     difference = end - start
-    minutes = difference.total_seconds() // 60
-    return minutes
+
+    return total_minutes(difference)
 
 
 def get_previous_month(month=None, year=None):
