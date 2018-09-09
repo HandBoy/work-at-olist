@@ -9,7 +9,8 @@ class CalcPrice():
         '''
         Class to calculate a price of the phone call
 
-        Args:
+        Parameters
+        ----------
             call_start: **datetime** when the phone call starts
             call_end: **datetime** the when the phone call ends
             charge: **datetime** the charge for apply to precify
@@ -36,16 +37,10 @@ class CalcPrice():
         The pattern of these possibilities are initially divided into two
         cases: if the start time is greater or less than the end-of-call time
 
-        Args:
-            time_start: the time to use as a starting a call
-            time_end: the time to use as an end a call
 
-        Returns:
-            the difference between time_start and time_end. For example:
-
-            >>> time_difference('2018-09-01 14:59:00',
-                                                '2018-09-01 14:53:00)
-            10.62
+        Returns
+        ----------
+            the price of a phone call
 
         '''
         minutes_standard_days = 0
@@ -59,8 +54,9 @@ class CalcPrice():
 
         if(days > 0):
             minutes_standard_days = days * self.charge_total_hour_by_day
-            # normalize date in the call by the call start
-
+            # if the call lasted more than one day, you must start and
+            # end on the same day, since the difference in days has already
+            # been calculated.
             self.call_end_time = self.call_end_time.replace(
                 year=self.call_start_time.year,
                 month=self.call_start_time.month,
@@ -72,11 +68,11 @@ class CalcPrice():
             self.call_start_less_than_end()
         else:
             self.call_start_bigger_than_end()
-
+        # After normalize, get the diffence to calc how mush was the phone call
         duration_standard = self.call_end_time - self.call_start_time
 
-        total_standard_minutes = total_minutes(duration_standard,
-                                               minutes_standard_days)
+        total_standard_minutes = (total_minutes(duration_standard)
+                                  + minutes_standard_days)
 
         price_standard = ((self.charge.standing_time_minute
                           * total_standard_minutes)
@@ -168,7 +164,7 @@ class CalcPrice():
                                     self.call_start_time.month,
                                     self.call_start_time.day,
                                     self.charge.standard_time_end.hour,
-                                    0, 0, tzinfo=pytz.utc) 
+                                    0, 0, tzinfo=pytz.utc)
                                    - self.call_start_time)
 
                 self.call_start_time = (datetime(
