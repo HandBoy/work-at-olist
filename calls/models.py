@@ -5,13 +5,9 @@ from django.core.exceptions import ValidationError
 
 
 # Create your models here.
-TYPE = (
-    ('S', 'Start'),
-    ('E', 'End'),
-)
 
 # Enumeration makes further modifications, if necessary, easier
-RECORD_TYPES = (
+CALL_TYPES = (
     ('S', 'Start'),
     ('E', 'End'),
 )
@@ -85,7 +81,7 @@ class CallStart(models.Model):
     """
     type = models.CharField(
         max_length=1,
-        choices=TYPE,
+        choices=CALL_TYPES,
         default='S')
 
     call_id = models.ForeignKey(
@@ -154,7 +150,7 @@ class CallEnd(models.Model):
     """
     type = models.CharField(
         max_length=1,
-        choices=TYPE,
+        choices=CALL_TYPES,
         default='E')
     timestamp = models.DateTimeField(auto_now_add=True)
     call_id = models.ForeignKey(
