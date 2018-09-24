@@ -84,8 +84,8 @@ The following environment was used to develop the project:
 - Python 3.5
 - Django 2.0.7
 - Django Rest Framework 3.8.2
-- coverage-4.5.1 for covarage tests
-
+- coverage 4.5.1 for covarage tests
+- python-decouple 3.1 for separation of settings from code
 
 # Work at Olist
 
