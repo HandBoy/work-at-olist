@@ -24,7 +24,7 @@ From the route of the repository:
     virtualenv --python='/usr/bin/python3' <folder_env_name>
 
     # Activate the environment
-    source source <folder_env_name>/bin/activate
+    source <folder_env_name>/bin/activate
 
     # Install requirements
     env/bin/pip install -r requirements.txt
